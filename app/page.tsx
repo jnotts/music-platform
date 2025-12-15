@@ -18,6 +18,7 @@ import {
 
 import { InstagramIcon, SpotifyIcon, SoundCloudIcon } from "@/components/icons";
 import { useFileUpload } from "@/hooks/useFileUpload";
+import { useSubmitDemo } from "@/hooks/useSubmitDemo";
 import { artistSchema, type ArtistInput } from "@/lib/schemas/submission";
 import { UPLOAD_CONFIG } from "@/lib/validation/upload";
 import SocialInput from "@/components/SocialInput";
@@ -39,14 +40,15 @@ export default function ArtistSubmissionPage() {
   }, []);
   const [showSocialsManual, setShowSocialsManual] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] =
     useState<SubmissionResult | null>(null);
-  const [submitError, setSubmitError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // File upload hook
   const fileUpload = useFileUpload();
+
+  // Submission mutation
+  const submitMutation = useSubmitDemo();
 
   // Track metadata state (keyed by upload ID)
   const [trackMetadata, setTrackMetadata] = useState<
@@ -146,28 +148,17 @@ export default function ArtistSubmissionPage() {
 
   // Form submission
   const handleSubmit = async (artistData: ArtistInput) => {
-    console.log("🚀 Submit triggered with artist data:", artistData);
-    setSubmitError(null);
-
     // Validate uploads
     if (fileUpload.uploads.length === 0) {
-      console.log("❌ No uploads");
-      setSubmitError("Please upload at least one track");
-      return;
+      return; // Form button is disabled, but extra safety
     }
 
     if (fileUpload.isUploading) {
-      console.log("⏳ Still uploading");
-      setSubmitError("Please wait for uploads to complete");
-      return;
+      return; // Still uploading
     }
 
     if (fileUpload.hasErrors) {
-      console.log("❌ Upload errors present");
-      setSubmitError(
-        "Please fix or remove tracks with errors before submitting"
-      );
-      return;
+      return; // Has upload errors
     }
 
     // Build tracks array
@@ -186,49 +177,20 @@ export default function ArtistSubmissionPage() {
       };
     });
 
-    console.log("📦 Built tracks payload:", tracks);
-
-    // Validate at least one track has a title
+    // Validate track titles
     if (tracks.some((t) => !t.title)) {
-      console.log("❌ Missing track titles");
-      setSubmitError("Please enter a title for each track");
-      return;
+      return; // Missing titles
     }
 
-    setIsSubmitting(true);
-    console.log("📤 Posting to /api/submissions...");
-
-    try {
-      const payload = {
-        artist: artistData,
-        tracks,
-      };
-      console.log("📋 Full payload:", payload);
-
-      const response = await fetch("/api/submissions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      console.log("📥 Response status:", response.status, response.statusText);
-
-      const result = await response.json();
-      console.log("📄 Response body:", result);
-
-      if (!result.ok) {
-        throw new Error(result.error?.message || "Submission failed");
+    // Submit using mutation
+    submitMutation.mutate(
+      { artist: artistData, tracks },
+      {
+        onSuccess: (data) => {
+          setSubmissionResult(data);
+        },
       }
-
-      // Success!
-      console.log("✅ Submission successful!", result.data);
-      setSubmissionResult(result.data);
-    } catch (err) {
-      console.error("❌ Submission error:", err);
-      setSubmitError(err instanceof Error ? err.message : "Submission failed");
-    } finally {
-      setIsSubmitting(false);
-    }
+    );
   };
 
   const hasTracks = fileUpload.uploads.length > 0;
@@ -400,20 +362,7 @@ export default function ArtistSubmissionPage() {
         {hasTracks && (
           <form
             id="submission-form"
-            onSubmit={(e) => {
-              console.log("Form onSubmit triggered");
-              console.log("Form errors:", form.formState.errors);
-              console.log("Form is valid:", form.formState.isValid);
-              form.handleSubmit(
-                (data) => {
-                  console.log("Validation passed, calling handleSubmit");
-                  handleSubmit(data);
-                },
-                (errors) => {
-                  console.log("Validation failed:", errors);
-                }
-              )(e);
-            }}
+            onSubmit={form.handleSubmit(handleSubmit)}
             className="grid gap-8 lg:grid-cols-12 animate-in fade-in slide-in-from-bottom-8 duration-700"
           >
             {/* Left Column: Artist Profile */}
@@ -557,10 +506,10 @@ export default function ArtistSubmissionPage() {
               </div>
 
               {/* Submit Error */}
-              {submitError && (
+              {submitMutation.error && (
                 <div className="p-4 rounded-lg bg-error/10 border border-error/30 text-error text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
                   <AlertCircle size={18} className="shrink-0 mt-0.5" />
-                  <span>{submitError}</span>
+                  <span>{submitMutation.error.message}</span>
                 </div>
               )}
 
@@ -568,19 +517,18 @@ export default function ArtistSubmissionPage() {
               <div className="lg:hidden">
                 <button
                   type="submit"
-                  disabled={isSubmitting || fileUpload.isUploading}
-                  className="btn-primary w-full disabled:opacity-50 flex items-center justify-center gap-2"
-                  onClick={() =>
-                    console.log("Mobile button clicked", {
-                      isSubmitting,
-                      isUploading: fileUpload.isUploading,
-                    })
+                  disabled={
+                    submitMutation.isPending ||
+                    fileUpload.isUploading ||
+                    fileUpload.uploads.length === 0 ||
+                    fileUpload.hasErrors
                   }
+                  className="btn-primary w-full disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  {isSubmitting && (
+                  {submitMutation.isPending && (
                     <Loader2 className="animate-spin" size={16} />
                   )}
-                  {isSubmitting
+                  {submitMutation.isPending
                     ? "Submitting..."
                     : fileUpload.isUploading
                     ? "Uploading..."
@@ -662,18 +610,16 @@ export default function ArtistSubmissionPage() {
             <button
               type="submit"
               form="submission-form"
-              disabled={isSubmitting || fileUpload.isUploading}
-              className="btn-primary disabled:opacity-50 flex items-center gap-2"
-              onClick={() =>
-                console.log("Footer button clicked", {
-                  isSubmitting,
-                  isUploading: fileUpload.isUploading,
-                  formId: "submission-form",
-                })
+              disabled={
+                submitMutation.isPending ||
+                fileUpload.isUploading ||
+                fileUpload.uploads.length === 0 ||
+                fileUpload.hasErrors
               }
+              className="btn-primary disabled:opacity-50 flex items-center gap-2"
             >
-              {isSubmitting && <Loader2 className="animate-spin" />}
-              {isSubmitting
+              {submitMutation.isPending && <Loader2 className="animate-spin" />}
+              {submitMutation.isPending
                 ? "Submitting..."
                 : fileUpload.isUploading
                 ? "Uploading..."
