@@ -39,4 +39,4 @@ Timeboxed (5-hour) Music Demo Submission Platform:
 
 When an AI assistant is used for non-trivial work:
 
-1. Log the **exact final prompt(s)** in `prompts.md`.
+1. Log the **exact final prompt(s)** in `docs/prompts.md`.

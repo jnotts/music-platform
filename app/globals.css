@@ -1,26 +1,172 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Use class strategy for dark mode */
+@variant dark (&:where(.dark, .dark *));
+
+/* ============================================
+   THEME - Design Tokens
+   Keeps a small, readable set of colors + easing.
+   ============================================ */
+@theme {
+  --font-sans: var(--font-inter);
+
+  /* Light mode colors (default) */
+  --color-primary: #2d7dff;
+  --color-primary-hover: #1a6bef;
+  --color-primary-shadow: rgba(45, 125, 255, 0.25);
+  --color-primary-shadow-hover: rgba(45, 125, 255, 0.35);
+  --color-primary-ring: rgba(45, 125, 255, 0.4);
+
+  --color-foreground: #0f172a;
+  --color-muted: #6b7280;
+
+  --color-surface: rgba(255, 255, 255, 0.3);
+  --color-surface-muted: rgba(15, 23, 42, 0.04);
+  --color-border: rgba(15, 23, 42, 0.08);
+
+  --color-shadow-sm: rgb(0 0 0 / 0.1);
+  --color-shadow-sm-secondary: rgb(0 0 0 / 0.1);
+  --color-shadow-md: rgb(0 0 0 / 0.1);
+  --color-shadow-md-secondary: rgb(0 0 0 / 0.1);
+  --color-shadow-lg: rgb(0 0 0 / 0.1);
+  --color-shadow-lg-secondary: rgb(0 0 0 / 0.1);
+
+  --color-success: #16a34a;
+  --color-error: #ef4444;
+
+  --backdrop-blur: 12px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* ============================================
+   BASE STYLES w/ GRADIENTS
+   ============================================ */
+@layer base {
+  /* Dark mode variable overrides */
+  .dark {
+    --color-foreground: #f5f3ee;
+    --color-muted: #9ca3af;
+    --color-surface: rgba(255, 255, 255, 0.1);
+    --color-surface-muted: rgba(255, 255, 255, 0.05);
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-shadow-sm: rgb(0 0 0 / 0.5);
+    --color-shadow-sm-secondary: rgb(0 0 0 / 0.5);
+    --color-shadow-md: rgb(0 0 0 / 0.5);
+    --color-shadow-md-secondary: rgb(0 0 0 / 0.5);
+    --color-shadow-lg: rgb(0 0 0 / 0.7);
+    --color-shadow-lg-secondary: rgb(0 0 0 / 0.7);
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: var(--color-foreground);
+    font-family: var(--font-sans), system-ui, sans-serif;
+    background-color: #f8f9fa;
+    background-image: url("/assets/bg-light-2.jpeg");
+    backdrop-filter: blur(24px);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+  }
+
+  .dark body {
+    background-color: #050505;
+    background-image: url("/assets/bg-dark.jpg");
+    backdrop-filter: blur(20px);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ============================================
+   COMPONENTS - Reusable Patterns (minimal)
+   ============================================ */
+@layer components {
+  /* Generic glass treatment */
+  .glass {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    backdrop-filter: blur(var(--backdrop-blur));
+  }
+
+  /* Card with hover lift */
+  .card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    backdrop-filter: blur(var(--backdrop-blur));
+    border-radius: 1rem;
+    padding: 1.25rem;
+    box-shadow: 0 4px 6px -1px var(--color-shadow-md),
+      0 2px 4px -2px var(--color-shadow-md-secondary);
+    transition: all 200ms ease-out;
+    transform: translateZ(0);
+  }
+
+  .card:hover {
+    transform: translateY(-0.125rem) scale(1.02) translateZ(0);
+    box-shadow: 0 20px 25px -5px var(--color-shadow-lg),
+      0 8px 10px -6px var(--color-shadow-lg-secondary);
+  }
+
+  /* Form input */
+  .input {
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface-muted);
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    outline: none;
+    transition: colors 150ms;
+  }
+
+  .input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 1px var(--color-primary-ring);
+  }
+
+  .input::placeholder {
+    color: var(--color-muted);
+    opacity: 0.4;
+  }
+
+  /* Label */
+  .label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-muted);
+  }
+
+  /* Primary button */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.75rem;
+    background-color: var(--color-primary);
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    color: white;
+    box-shadow: 0 4px 6px -1px var(--color-primary-shadow),
+      0 2px 4px -2px var(--color-primary-shadow);
+    transition: all 150ms ease-out;
+    transform: translateZ(0);
+  }
+
+  .btn-primary:hover {
+    transform: scale(1.02) translateZ(0);
+    box-shadow: 0 10px 15px -3px var(--color-primary-shadow-hover),
+      0 4px 6px -4px var(--color-primary-shadow-hover);
+  }
+
+  .btn-primary:active {
+    transform: scale(0.95) translateZ(0);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }

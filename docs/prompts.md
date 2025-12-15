@@ -29,4 +29,14 @@ Output: implement the code changes only. If you decide the tasks should be broke
 
 If at any moment the instructions are unclear or contradict a requirement in the @ASSIGNMENT.md then make note of it so I can remedy immediately.
 
+### Prompt 002 - create initial page routes and scafold the submission form page
 
+1.  Follow the routes outlined in @PRD.md and create barebone pages for now. Then add simple login functionality for admins to login, no UI Design required yet.
+
+2.  Build a UI prototype for the artist submission page at @page.tsx . Layout (top to bottom): minimal header with label logo/name, H1 "Submit Your Demo" with a brief tagline beneath. Below that, a compact dropzone area (~80px height) with dashed border and "Drop your tracks here" text that collapses to a slim "Add more" bar state. Next, a concise artist info section in a 2-3 column grid (Name, Email, Phone on one row; optional Bio textarea below, collapsible "Add social links" for Instagram/SoundCloud/Spotify). Below the form, display mock track cards in a 3-column responsive grid (2 on tablet, 1 on mobile). Each track card shows: filename, a progress bar (mock at various states: uploading, complete), and inline fields for title/genre/BPM/key. A sticky footer contains the Submit button and subtle "Admin" link. Style: dark premium glass aesthetic per the reference—deep charcoal background (#0B0D0F), off-white text (#F5F3EE), muted (#A8A29E), accent blue (#2D7DFF). Create a matching light mode and allow toggle between both light/dark. Cards use glass morphism: semi-transparent backgrounds (rgba(255,255,255,0.04-0.08)), subtle white/10 borders, soft shadows, generous padding (16-24px), rounded corners (16px). Typography: Inter font, clean hierarchy. Use mock data for 3-4 example track cards at different upload states. No actual functionality needed—this is a visual prototype only.
+
+See the image for design and style inspiration, but note that the concept and layout is slightly different.
+
+### Prompt 003 — Global Theme & Glassmorphism Design
+
+Refactor the application's theming to use globals.css for resuable tailwind classes semantic design tokens (primary, surface, muted) instead of hardcoded hex values. Implement a robust dark/light mode system that uses next-themes and applies a premium glassmorphism aesthetic (backdrop-blur, semi-transparent backgrounds) across the app. Ensure the design feels distinct and not generic."
