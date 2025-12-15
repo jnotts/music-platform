@@ -1,87 +1,316 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useTheme } from "next-themes";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Sun,
+  Moon,
+  Upload,
+  Plus,
+  Check,
+  Loader2,
+  AlertCircle,
+  ChevronDown,
+} from "lucide-react";
+
 import { InstagramIcon, SpotifyIcon, SoundCloudIcon } from "@/components/icons";
+import { useFileUpload } from "@/hooks/useFileUpload";
+import { artistSchema, type ArtistInput } from "@/lib/schemas/submission";
+import { UPLOAD_CONFIG } from "@/lib/validation/upload";
+import SocialInput from "@/components/SocialInput";
+import { TrackCard, type TrackMetadata } from "@/components/TrackCard";
 
-type UploadStatus = "uploading" | "processing" | "complete" | "error";
-
-interface Track {
-  id: string;
-  filename: string;
-  size: string;
-  status: UploadStatus;
-  progress: number;
-  title: string;
-  genre: string;
-  bpm: string;
-  key: string;
+interface SubmissionResult {
+  submission_id: string;
+  artist_id: string;
+  tracks_count: number;
 }
 
-export default function ArtistSubmissionPrototype() {
+export default function ArtistSubmissionPage() {
   const { theme, setTheme } = useTheme();
-  const [showSocials, setShowSocials] = useState(false);
-  const [tracks, setTracks] = useState<Track[]>([]);
+  // Needed to prevent hydration mismatch
+  const [mounted, setMounted] = useState(false);
 
-  const addDummyTrack = () => {
-    if (tracks.length >= 5) return;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  const [showSocialsManual, setShowSocialsManual] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionResult, setSubmissionResult] =
+    useState<SubmissionResult | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const newTrack: Track = {
-      id: Math.random().toString(36).substr(2, 9),
-      filename: `Demo_Track_${tracks.length + 1}.wav`,
-      size: "32.5 MB",
-      status: "uploading",
-      progress: 0,
-      title: "",
-      genre: "",
-      bpm: "",
-      key: "",
-    };
+  // File upload hook
+  const fileUpload = useFileUpload();
 
-    setTracks((prev) => [...prev, newTrack]);
+  // Track metadata state (keyed by upload ID)
+  const [trackMetadata, setTrackMetadata] = useState<
+    Record<string, TrackMetadata>
+  >({});
 
-    // Simulate upload progress
-    setTimeout(() => {
-      setTracks((prev) =>
-        prev.map((t) => (t.id === newTrack.id ? { ...t, progress: 35 } : t))
-      );
-    }, 500);
-    setTimeout(() => {
-      setTracks((prev) =>
-        prev.map((t) => (t.id === newTrack.id ? { ...t, progress: 70 } : t))
-      );
-    }, 1500);
-    setTimeout(() => {
-      setTracks((prev) =>
-        prev.map((t) =>
-          t.id === newTrack.id ? { ...t, progress: 100, status: "complete" } : t
-        )
-      );
-    }, 2500);
+  // Artist form with react-hook-form
+  const form = useForm<ArtistInput>({
+    resolver: zodResolver(artistSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      bio: "",
+      instagram_url: "",
+      soundcloud_url: "",
+      spotify_url: "",
+    },
+  });
+
+  // Initialize track metadata when new uploads are added
+  useEffect(() => {
+    setTrackMetadata((prev) => {
+      const uploadIds = new Set(fileUpload.uploads.map((u) => u.id));
+      const updated = { ...prev };
+      let hasChanges = false;
+
+      // Add metadata for new uploads
+      fileUpload.uploads.forEach((upload) => {
+        if (!updated[upload.id]) {
+          updated[upload.id] = {
+            title: upload.file.name.replace(/\.[^/.]+$/, ""), // Remove extension
+            genre: "",
+            bpm: "",
+            key: "",
+            description: "",
+          };
+          hasChanges = true;
+        }
+      });
+
+      // Remove metadata for uploads that no longer exist
+      for (const id of Object.keys(updated)) {
+        if (!uploadIds.has(id)) {
+          delete updated[id];
+          hasChanges = true;
+        }
+      }
+
+      return hasChanges ? updated : prev;
+    });
+  }, [fileUpload.uploads]);
+
+  // Update track metadata
+  const updateTrackMetadata = (
+    uploadId: string,
+    field: keyof TrackMetadata,
+    value: string
+  ) => {
+    setTrackMetadata((prev) => ({
+      ...prev,
+      [uploadId]: { ...prev[uploadId], [field]: value },
+    }));
   };
 
-  const hasTracks = tracks.length > 0;
+  // Handle file selection
+  const handleFileSelect = useCallback(
+    (files: FileList | File[] | null) => {
+      if (!files || files.length === 0) return;
+      fileUpload.addFiles(files);
+    },
+    [fileUpload]
+  );
+
+  // Drag and drop handlers
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+      handleFileSelect(e.dataTransfer.files);
+    },
+    [handleFileSelect]
+  );
+
+  // Form submission
+  const handleSubmit = async (artistData: ArtistInput) => {
+    console.log("🚀 Submit triggered with artist data:", artistData);
+    setSubmitError(null);
+
+    // Validate uploads
+    if (fileUpload.uploads.length === 0) {
+      console.log("❌ No uploads");
+      setSubmitError("Please upload at least one track");
+      return;
+    }
+
+    if (fileUpload.isUploading) {
+      console.log("⏳ Still uploading");
+      setSubmitError("Please wait for uploads to complete");
+      return;
+    }
+
+    if (fileUpload.hasErrors) {
+      console.log("❌ Upload errors present");
+      setSubmitError(
+        "Please fix or remove tracks with errors before submitting"
+      );
+      return;
+    }
+
+    // Build tracks array
+    const tracks = fileUpload.completedUploads.map((upload) => {
+      const meta = trackMetadata[upload.id];
+      return {
+        storage_path: upload.storagePath!,
+        filename: upload.file.name,
+        mime_type: upload.file.type || "application/octet-stream",
+        size_bytes: upload.file.size,
+        title: meta?.title?.trim() || upload.file.name.replace(/\.[^/.]+$/, ""),
+        genre: meta?.genre || null,
+        bpm: meta?.bpm ? parseInt(meta.bpm, 10) || null : null,
+        key: meta?.key || null,
+        description: meta?.description || null,
+      };
+    });
+
+    console.log("📦 Built tracks payload:", tracks);
+
+    // Validate at least one track has a title
+    if (tracks.some((t) => !t.title)) {
+      console.log("❌ Missing track titles");
+      setSubmitError("Please enter a title for each track");
+      return;
+    }
+
+    setIsSubmitting(true);
+    console.log("📤 Posting to /api/submissions...");
+
+    try {
+      const payload = {
+        artist: artistData,
+        tracks,
+      };
+      console.log("📋 Full payload:", payload);
+
+      const response = await fetch("/api/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      console.log("📥 Response status:", response.status, response.statusText);
+
+      const result = await response.json();
+      console.log("📄 Response body:", result);
+
+      if (!result.ok) {
+        throw new Error(result.error?.message || "Submission failed");
+      }
+
+      // Success!
+      console.log("✅ Submission successful!", result.data);
+      setSubmissionResult(result.data);
+    } catch (err) {
+      console.error("❌ Submission error:", err);
+      setSubmitError(err instanceof Error ? err.message : "Submission failed");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const hasTracks = fileUpload.uploads.length > 0;
+
+  // Auto-expand socials if there are validation errors OR user toggled OR has content
+  const hasSocialErrors =
+    !!form.formState.errors.instagram_url ||
+    !!form.formState.errors.spotify_url ||
+    !!form.formState.errors.soundcloud_url;
+  const hasSocialContent =
+    form.watch("instagram_url") ||
+    form.watch("spotify_url") ||
+    form.watch("soundcloud_url");
+  const showSocials = showSocialsManual || hasSocialErrors || hasSocialContent;
+
+  // SUCCESS STATE
+  if (submissionResult) {
+    return (
+      <div className="min-h-screen font-sans flex items-center justify-center p-6 text-foreground dark:text-[#F5F3EE]">
+        <div className="text-center max-w-md">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-success/10 text-success mb-6">
+            <Check size={40} />
+          </div>
+          <h1 className="text-3xl font-bold mb-4">Submission Received!</h1>
+          <p className="text-muted mb-6">
+            Thank you for submitting your demo. Our A&R team will review your{" "}
+            {submissionResult.tracks_count} track
+            {submissionResult.tracks_count > 1 ? "s" : ""} and get back to you
+            soon.
+          </p>
+          <p className="text-sm text-muted/70 mb-8">
+            Submission ID:{" "}
+            <span className="font-mono">
+              {submissionResult.submission_id.slice(0, 8)}
+            </span>
+          </p>
+          <button
+            onClick={() => {
+              setSubmissionResult(null);
+              fileUpload.clearAll();
+              form.reset();
+              setTrackMetadata({});
+            }}
+            className="btn-primary"
+          >
+            Submit Another Demo
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen font-sans transition-colors duration-500 text-foreground dark:text-[#F5F3EE]">
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={UPLOAD_CONFIG.allowedExtensions.join(",")}
+        multiple
+        className="hidden"
+        onChange={(e) => handleFileSelect(e.target.files)}
+      />
+
       {/* Theme Toggle */}
       <div className="fixed top-6 right-6 z-50">
         <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md transition-all border border-border bg-surface/60 hover:bg-surface dark:border-white/10 dark:bg-white/10 dark:hover:bg-white/20"
+          className="flex items-center cursor-pointer gap-2 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md transition-all border border-border bg-surface/60 hover:bg-surface dark:border-white/10 dark:bg-white/10 dark:hover:bg-white/20"
         >
-          {theme === "dark" ? (
-            <>
-              <SunIcon />
-              <span>Light Mode</span>
-            </>
-          ) : (
-            <>
-              <MoonIcon />
-              <span>Dark Mode</span>
-            </>
-          )}
+          {mounted &&
+            (theme === "dark" ? (
+              <>
+                <Sun size={14} />
+                <span>Light Mode</span>
+              </>
+            ) : (
+              <>
+                <Moon size={14} />
+                <span>Dark Mode</span>
+              </>
+            ))}
         </button>
       </div>
 
@@ -132,18 +361,36 @@ export default function ArtistSubmissionPrototype() {
         {/* STATE A: Initial Dropzone */}
         {!hasTracks && (
           <div
-            onClick={addDummyTrack}
-            className="group relative flex cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed transition-all duration-300 hover:scale-[1.01] hover:border-primary hover:bg-primary/5 h-64 gap-6 bg-surface-muted border-border dark:bg-white/[0.02] dark:border-white/10"
+            onClick={() => fileInputRef.current?.click()}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`group relative flex cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed transition-all duration-300 h-64 gap-6 ${
+              isDragging
+                ? "border-primary bg-primary/10 scale-[1.02]"
+                : "hover:scale-[1.01] hover:border-primary hover:bg-primary/5 bg-surface-muted border-border dark:bg-white/[0.02] dark:border-white/10"
+            }`}
           >
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
-              <UploadIcon size={40} />
+            <div
+              className={`flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary transition-transform duration-500 ${
+                isDragging
+                  ? "scale-110 rotate-3"
+                  : "group-hover:scale-110 group-hover:rotate-3"
+              }`}
+            >
+              <Upload size={40} />
             </div>
             <div className="text-center space-y-2">
               <p className="text-xl font-medium">
-                Drop your tracks here or click to browse
+                {isDragging
+                  ? "Drop your files here"
+                  : "Drop your tracks here or click to browse"}
               </p>
               <p className="text-sm text-muted">
-                Supported: WAV, MP3, AIFF, M4A (Max 50MB)
+                Supported:{" "}
+                {UPLOAD_CONFIG.allowedExtensions.join(", ").toUpperCase()} (Max{" "}
+                {UPLOAD_CONFIG.maxFileSizeMB}
+                MB)
               </p>
             </div>
           </div>
@@ -151,7 +398,24 @@ export default function ArtistSubmissionPrototype() {
 
         {/* STATE B: Active Dashboard */}
         {hasTracks && (
-          <div className="grid gap-8 lg:grid-cols-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
+          <form
+            id="submission-form"
+            onSubmit={(e) => {
+              console.log("Form onSubmit triggered");
+              console.log("Form errors:", form.formState.errors);
+              console.log("Form is valid:", form.formState.isValid);
+              form.handleSubmit(
+                (data) => {
+                  console.log("Validation passed, calling handleSubmit");
+                  handleSubmit(data);
+                },
+                (errors) => {
+                  console.log("Validation failed:", errors);
+                }
+              )(e);
+            }}
+            className="grid gap-8 lg:grid-cols-12 animate-in fade-in slide-in-from-bottom-8 duration-700"
+          >
             {/* Left Column: Artist Profile */}
             <div className="space-y-6 lg:col-span-4 lg:sticky lg:top-8 lg:h-fit">
               <div className="card !p-6">
@@ -159,21 +423,37 @@ export default function ArtistSubmissionPrototype() {
 
                 <div className="space-y-5">
                   <div className="space-y-1.5">
-                    <label className="label">Artist / Band Name</label>
+                    <label className="label">Artist / Band Name *</label>
                     <input
                       type="text"
                       placeholder="e.g. Neon Horizon"
-                      className="input"
+                      className={`input ${
+                        form.formState.errors.name ? "!border-error" : ""
+                      }`}
+                      {...form.register("name")}
                     />
+                    {form.formState.errors.name && (
+                      <p className="text-xs text-error">
+                        {form.formState.errors.name.message}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="label">Contact Email</label>
+                    <label className="label">Contact Email *</label>
                     <input
                       type="email"
                       placeholder="you@example.com"
-                      className="input"
+                      className={`input ${
+                        form.formState.errors.email ? "!border-error" : ""
+                      }`}
+                      {...form.register("email")}
                     />
+                    {form.formState.errors.email && (
+                      <p className="text-xs text-error">
+                        {form.formState.errors.email.message}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-1.5">
@@ -182,6 +462,7 @@ export default function ArtistSubmissionPrototype() {
                       type="tel"
                       placeholder="+1 (555) 000-0000"
                       className="input"
+                      {...form.register("phone")}
                     />
                   </div>
 
@@ -191,42 +472,120 @@ export default function ArtistSubmissionPrototype() {
                       rows={4}
                       placeholder="Tell us a bit about your project and these tracks..."
                       className="input resize-none"
+                      {...form.register("bio")}
                     />
                   </div>
 
                   {/* Socials */}
                   <div className="pt-2">
                     <button
-                      onClick={() => setShowSocials(!showSocials)}
+                      type="button"
+                      onClick={() => setShowSocialsManual(!showSocialsManual)}
                       className="flex w-full items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted hover:text-foreground dark:hover:text-white transition-colors"
                     >
-                      <span>Social Profiles</span>
-                      <ChevronIcon rotated={showSocials} />
+                      <span>
+                        Social Profiles{" "}
+                        {hasSocialErrors && (
+                          <span className="text-error">*</span>
+                        )}
+                      </span>
+                      <ChevronDown
+                        size={14}
+                        className={`transition-transform duration-200 ${
+                          showSocials ? "rotate-180" : ""
+                        }`}
+                      />
                     </button>
 
                     {showSocials && (
                       <div className="mt-4 space-y-3 animate-in fade-in slide-in-from-top-2">
-                        <SocialInput
-                          icon={<InstagramIcon />}
-                          placeholder="Instagram URL"
-                        />
-                        <SocialInput
-                          icon={<SpotifyIcon />}
-                          placeholder="Spotify URL"
-                        />
-                        <SocialInput
-                          icon={<SoundCloudIcon />}
-                          placeholder="SoundCloud URL"
-                        />
+                        <div className="space-y-1">
+                          <SocialInput
+                            icon={<InstagramIcon />}
+                            placeholder="Instagram URL"
+                            className={
+                              form.formState.errors.instagram_url
+                                ? "!border-error"
+                                : ""
+                            }
+                            {...form.register("instagram_url")}
+                          />
+                          {form.formState.errors.instagram_url && (
+                            <p className="text-xs text-error ml-1">
+                              {form.formState.errors.instagram_url.message}
+                            </p>
+                          )}
+                        </div>
+                        <div className="space-y-1">
+                          <SocialInput
+                            icon={<SpotifyIcon />}
+                            placeholder="Spotify URL"
+                            className={
+                              form.formState.errors.spotify_url
+                                ? "!border-error"
+                                : ""
+                            }
+                            {...form.register("spotify_url")}
+                          />
+                          {form.formState.errors.spotify_url && (
+                            <p className="text-xs text-error ml-1">
+                              {form.formState.errors.spotify_url.message}
+                            </p>
+                          )}
+                        </div>
+                        <div className="space-y-1">
+                          <SocialInput
+                            icon={<SoundCloudIcon />}
+                            placeholder="SoundCloud URL"
+                            className={
+                              form.formState.errors.soundcloud_url
+                                ? "!border-error"
+                                : ""
+                            }
+                            {...form.register("soundcloud_url")}
+                          />
+                          {form.formState.errors.soundcloud_url && (
+                            <p className="text-xs text-error ml-1">
+                              {form.formState.errors.soundcloud_url.message}
+                            </p>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
                 </div>
               </div>
 
+              {/* Submit Error */}
+              {submitError && (
+                <div className="p-4 rounded-lg bg-error/10 border border-error/30 text-error text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+                  <AlertCircle size={18} className="shrink-0 mt-0.5" />
+                  <span>{submitError}</span>
+                </div>
+              )}
+
               {/* Mobile Submit */}
               <div className="lg:hidden">
-                <button className="btn-primary w-full">Submit Demo</button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting || fileUpload.isUploading}
+                  className="btn-primary w-full disabled:opacity-50 flex items-center justify-center gap-2"
+                  onClick={() =>
+                    console.log("Mobile button clicked", {
+                      isSubmitting,
+                      isUploading: fileUpload.isUploading,
+                    })
+                  }
+                >
+                  {isSubmitting && (
+                    <Loader2 className="animate-spin" size={16} />
+                  )}
+                  {isSubmitting
+                    ? "Submitting..."
+                    : fileUpload.isUploading
+                    ? "Uploading..."
+                    : "Submit Demo"}
+                </button>
               </div>
             </div>
 
@@ -236,151 +595,63 @@ export default function ArtistSubmissionPrototype() {
                 <h2 className="text-lg font-semibold">
                   Uploaded Tracks{" "}
                   <span className="text-muted text-sm font-normal ml-2">
-                    ({tracks.length}/5)
+                    ({fileUpload.uploads.length}/
+                    {UPLOAD_CONFIG.maxTracksPerSubmission})
                   </span>
                 </h2>
-                <span className="text-xs tracking-wider uppercase text-muted/50">
-                  Auto-Detecting BPM/Key
-                </span>
+                {fileUpload.isUploading && (
+                  <span className="text-xs tracking-wider uppercase text-primary">
+                    Uploading... {fileUpload.overallProgress}%
+                  </span>
+                )}
               </div>
 
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {tracks.map((track) => (
-                  <div
-                    key={track.id}
-                    className={`card ${
-                      track.status === "error" ? "!border-error/50" : ""
-                    }`}
-                  >
-                    {/* Header */}
-                    <div className="mb-3 flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3 overflow-hidden">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-muted dark:bg-white/5">
-                          <MusicIcon />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-xs font-medium truncate">
-                            {track.filename}
-                          </div>
-                          <div className="text-[10px] text-muted">
-                            {track.size}
-                          </div>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() =>
-                          setTracks((prev) =>
-                            prev.filter((t) => t.id !== track.id)
-                          )
-                        }
-                        className="text-muted hover:text-error transition-colors"
-                      >
-                        <CloseIcon />
-                      </button>
-                    </div>
-
-                    {/* Progress */}
-                    <div className="mb-5 space-y-1">
-                      <div className="flex justify-between text-[10px] font-medium">
-                        <span
-                          className={
-                            track.status === "uploading"
-                              ? "text-primary"
-                              : track.status === "complete"
-                              ? "text-success"
-                              : "text-muted"
-                          }
-                        >
-                          {track.status === "uploading"
-                            ? "Uploading..."
-                            : track.status === "processing"
-                            ? "Processing..."
-                            : track.status === "complete"
-                            ? "Ready"
-                            : "Error"}
-                        </span>
-                        <span className="text-muted">{track.progress}%</span>
-                      </div>
-                      <div className="h-1 w-full overflow-hidden rounded-full bg-border dark:bg-white/5">
-                        <div
-                          className={`h-full transition-all duration-300 ease-out ${
-                            track.status === "complete"
-                              ? "bg-success"
-                              : "bg-primary"
-                          }`}
-                          style={{ width: `${track.progress}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Inputs */}
-                    <div className="space-y-3">
-                      <div className="space-y-1">
-                        <label className="label">Title</label>
-                        <input
-                          type="text"
-                          defaultValue={track.title}
-                          placeholder="Track Title"
-                          className="w-full bg-transparent py-1 text-sm font-medium outline-none border-b border-border focus:border-primary transition-colors placeholder:text-muted/30"
-                        />
-                      </div>
-                      <div className="grid grid-cols-5 gap-2">
-                        <div className="col-span-3 space-y-1">
-                          <label className="label">Genre</label>
-                          <input
-                            type="text"
-                            defaultValue={track.genre}
-                            placeholder="Genre"
-                            className="w-full bg-transparent py-1 text-sm outline-none border-b border-border focus:border-primary transition-colors placeholder:text-muted/30"
-                          />
-                        </div>
-                        <div className="col-span-1 space-y-1">
-                          <label className="label">BPM</label>
-                          <input
-                            type="text"
-                            defaultValue={track.bpm}
-                            placeholder="-"
-                            className="w-full bg-transparent py-1 text-sm outline-none border-b border-border focus:border-primary transition-colors placeholder:text-muted/30 text-center"
-                          />
-                        </div>
-                        <div className="col-span-1 space-y-1">
-                          <label className="label">Key</label>
-                          <input
-                            type="text"
-                            defaultValue={track.key}
-                            placeholder="-"
-                            className="w-full bg-transparent py-1 text-sm outline-none border-b border-border focus:border-primary transition-colors placeholder:text-muted/30 text-center"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                {fileUpload.uploads.map((upload) => (
+                  <TrackCard
+                    key={upload.id}
+                    upload={upload}
+                    metadata={trackMetadata[upload.id]}
+                    onMetadataChange={(field, value) =>
+                      updateTrackMetadata(upload.id, field, value)
+                    }
+                    onRemove={() => fileUpload.removeUpload(upload.id)}
+                    onRetry={() => fileUpload.retryUpload(upload.id)}
+                  />
                 ))}
 
                 {/* Add More Card */}
-                {tracks.length < 5 && (
+                {fileUpload.uploads.length <
+                  UPLOAD_CONFIG.maxTracksPerSubmission && (
                   <div
-                    onClick={addDummyTrack}
-                    className="group bg-black/2 min-h-[250px] flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed text-muted hover:text-primary transition-all p-4 border-border hover:border-primary/50 hover:bg-primary/5 dark:border-white/10"
+                    onClick={() => fileInputRef.current?.click()}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    className={`group min-h-[250px] flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed text-muted hover:text-primary transition-all p-4 ${
+                      isDragging
+                        ? "border-primary bg-primary/10"
+                        : "border-border hover:border-primary/50 hover:bg-primary/5 dark:border-white/10"
+                    }`}
                   >
-                    <PlusIcon />
+                    <Plus size={28} />
                     <span className="mt-3 text-xs font-semibold uppercase tracking-wider">
                       Add Another
                     </span>
                     <span className="mt-1 text-[10px] opacity-70">
-                      Max 5 Tracks
+                      Max {UPLOAD_CONFIG.maxTracksPerSubmission} Tracks
                     </span>
                   </div>
                 )}
               </div>
             </div>
-          </div>
+          </form>
         )}
       </div>
 
       {/* Footer */}
       {hasTracks && (
-        <footer className="fixed bottom-0 left-0 right-0 glass border-0 hidden lg:block ">
+        <footer className="fixed bottom-0 left-0 right-0 glass border-0 hidden lg:block">
           <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-4">
             <Link
               href="/admin/login"
@@ -388,153 +659,29 @@ export default function ArtistSubmissionPrototype() {
             >
               Admin Access
             </Link>
-            <button className="btn-primary">Submit Demo</button>
+            <button
+              type="submit"
+              form="submission-form"
+              disabled={isSubmitting || fileUpload.isUploading}
+              className="btn-primary disabled:opacity-50 flex items-center gap-2"
+              onClick={() =>
+                console.log("Footer button clicked", {
+                  isSubmitting,
+                  isUploading: fileUpload.isUploading,
+                  formId: "submission-form",
+                })
+              }
+            >
+              {isSubmitting && <Loader2 className="animate-spin" />}
+              {isSubmitting
+                ? "Submitting..."
+                : fileUpload.isUploading
+                ? "Uploading..."
+                : "Submit Demo"}
+            </button>
           </div>
         </footer>
       )}
     </div>
   );
 }
-
-// ============================================
-// ICONS (extracted for cleanliness)
-// ============================================
-const SunIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="12" cy="12" r="5" />
-    <path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
-  </svg>
-);
-
-const MoonIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-  </svg>
-);
-
-const UploadIcon = ({ size = 24 }: { size?: number }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-    <polyline points="17 8 12 3 7 8" />
-    <line x1="12" y1="3" x2="12" y2="15" />
-  </svg>
-);
-
-const MusicIcon = () => (
-  <svg
-    className="text-muted"
-    xmlns="http://www.w3.org/2000/svg"
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M9 18V5l12-2v13" />
-    <circle cx="6" cy="18" r="3" />
-    <circle cx="18" cy="16" r="3" />
-  </svg>
-);
-
-const CloseIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M18 6 6 18" />
-    <path d="m6 6 12 12" />
-  </svg>
-);
-
-const PlusIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="28"
-    height="28"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M5 12h14" />
-    <path d="M12 5v14" />
-  </svg>
-);
-
-const ChevronIcon = ({ rotated }: { rotated: boolean }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={`transition-transform duration-200 ${
-      rotated ? "rotate-180" : ""
-    }`}
-  >
-    <path d="m6 9 6 6 6-6" />
-  </svg>
-);
-
-const SocialInput = ({
-  icon,
-  placeholder,
-}: {
-  icon: React.ReactNode;
-  placeholder: string;
-}) => (
-  <div className="flex items-center gap-3 rounded-lg border px-3 py-2 transition-colors border-border bg-surface-muted dark:border-white/5 dark:bg-black/20 dark:focus-within:border-white/20">
-    {icon}
-    <input
-      type="text"
-      placeholder={placeholder}
-      className="bg-transparent text-sm outline-none w-full placeholder:text-muted/30"
-    />
-  </div>
-);

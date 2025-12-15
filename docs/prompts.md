@@ -40,3 +40,7 @@ See the image for design and style inspiration, but note that the concept and la
 ### Prompt 003 — Global Theme & Glassmorphism Design
 
 Refactor the application's theming to use globals.css for resuable tailwind classes semantic design tokens (primary, surface, muted) instead of hardcoded hex values. Implement a robust dark/light mode system that uses next-themes and applies a premium glassmorphism aesthetic (backdrop-blur, semi-transparent backgrounds) across the app. Ensure the design feels distinct and not generic."
+
+### Prompt 004 — Upload Component
+
+implement logic for this artist submission @app/page.tsx to hook it up. See all info in @docs/PRD.md @docs/ASSIGNMENT.md @docs/TECH_STACK.md -> ensure the main requirements are met (batch uploads (max 5 per submission) which can happen in the background). Uploads need time estimates etc. Cover all requirements for this part. REST API already exists in the app @lib/api/ @app/api/ . If certain config/envs are needed, write the code anyway and make note of any steps needed to config after (e.g. setting up storage in supabase). plan.
