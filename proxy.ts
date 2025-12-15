@@ -7,7 +7,7 @@ import { updateSession } from "@/lib/supabase/proxy";
  * Runs on every matched request to refresh auth tokens automatically.
  * This keeps user sessions fresh and prevents expired JWT issues.
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   return await updateSession(request);
 }
 
