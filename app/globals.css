@@ -71,7 +71,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url("/assets/bg-light-2.jpeg");
+    background-image: url("/assets/bg-light.jpeg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -84,7 +84,7 @@
   }
 
   .dark body::before {
-    background-image: url("/assets/bg-dark-2.jpeg");
+    background-image: url("/assets/bg-dark.jpeg");
     filter: blur(0px);
   }
 }
