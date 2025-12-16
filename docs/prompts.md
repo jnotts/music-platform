@@ -33,14 +33,28 @@ If at any moment the instructions are unclear or contradict a requirement in the
 
 1.  Follow the routes outlined in @PRD.md and create barebone pages for now. Then add simple login functionality for admins to login, no UI Design required yet.
 
-2.  Build a UI prototype for the artist submission page at @page.tsx . Layout (top to bottom): minimal header with label logo/name, H1 "Submit Your Demo" with a brief tagline beneath. Below that, a compact dropzone area (~80px height) with dashed border and "Drop your tracks here" text that collapses to a slim "Add more" bar state. Next, a concise artist info section in a 2-3 column grid (Name, Email, Phone on one row; optional Bio textarea below, collapsible "Add social links" for Instagram/SoundCloud/Spotify). Below the form, display mock track cards in a 3-column responsive grid (2 on tablet, 1 on mobile). Each track card shows: filename, a progress bar (mock at various states: uploading, complete), and inline fields for title/genre/BPM/key. A sticky footer contains the Submit button and subtle "Admin" link. Style: dark premium glass aesthetic per the reference—deep charcoal background (#0B0D0F), off-white text (#F5F3EE), muted (#A8A29E), accent blue (#2D7DFF). Create a matching light mode and allow toggle between both light/dark. Cards use glass morphism: semi-transparent backgrounds (rgba(255,255,255,0.04-0.08)), subtle white/10 borders, soft shadows, generous padding (16-24px), rounded corners (16px). Typography: Inter font, clean hierarchy. Use mock data for 3-4 example track cards at different upload states. No actual functionality needed—this is a visual prototype only.
+2.  Build a UI prototype for the artist submission page at @page.tsx . Layout (top to bottom): minimal header with label logo/name, H1 "Submit Your Demo" with a brief tagline beneath. Below that, a compact dropzone area (~80px height) with dashed border and "Drop your tracks here" text that collapses to a slim "Add more" bar state. Next, a concise artist info section in a 2-3 column grid (Name, Email, Phone on one row; optional Bio textarea below, collapsible "Add social links" for Instagram/SoundCloud/Spotify). Below the form, display mock track cards in a 3-column responsive grid (2 on tablet, 1 on mobile). Each track card shows: filename, a progress bar (mock at various states: uploading, complete), and inline fields for title/genre/BPM/key. A sticky footer contains the Submit button and subtle "Admin" link. Style: dark premium glass aesthetic per the reference-deep charcoal background (#0B0D0F), off-white text (#F5F3EE), muted (#A8A29E), accent blue (#2D7DFF). Create a matching light mode and allow toggle between both light/dark. Cards use glass morphism: semi-transparent backgrounds (rgba(255,255,255,0.04-0.08)), subtle white/10 borders, soft shadows, generous padding (16-24px), rounded corners (16px). Typography: Inter font, clean hierarchy. Use mock data for 3-4 example track cards at different upload states. No actual functionality needed-this is a visual prototype only.
 
 See the image for design and style inspiration, but note that the concept and layout is slightly different.
 
-### Prompt 003 — Global Theme & Glassmorphism Design
+### Prompt 003 - Global Theme & Glassmorphism Design
 
 Refactor the application's theming to use globals.css for resuable tailwind classes semantic design tokens (primary, surface, muted) instead of hardcoded hex values. Implement a robust dark/light mode system that uses next-themes and applies a premium glassmorphism aesthetic (backdrop-blur, semi-transparent backgrounds) across the app. Ensure the design feels distinct and not generic."
 
-### Prompt 004 — Upload Component
+### Prompt 004 - Upload Component
 
 implement logic for this artist submission @app/page.tsx to hook it up. See all info in @docs/PRD.md @docs/ASSIGNMENT.md @docs/TECH_STACK.md -> ensure the main requirements are met (batch uploads (max 5 per submission) which can happen in the background). Uploads need time estimates etc. Cover all requirements for this part. REST API already exists in the app @lib/api/ @app/api/ . If certain config/envs are needed, write the code anyway and make note of any steps needed to config after (e.g. setting up storage in supabase). plan.
+
+### Prompt 005 - Scaffold submissions dashboard
+
+create the UI/design protype for /admin/submissions page with core featuers;
+Submission Management:
+Display all submissions in a clean, filterable, and searchable interface.
+Allow admins to stream audio directly without needing to download the full file. A waveform visualization would be a great touch.
+Manage submission statuses: Pending, In-Review, Approved, Rejected.
+Review & Grading System:
+Enable admins to grade submissions on a 1-10 scale.
+Provide fields for internal notes and constructive feedback for the artist.
+UI should consist of 3 main sections. 1. Left glass floating side panel which contains a searchable and filterable list of submissions. Takes up slightly more width on left when no submission selected. When one is selected, width is smaller but can still see list. Can also toggle to collapse to the side completely 2. Only when submission is clicked, the main section in the middle contains all the submission info: metadata, with some sort of scrollable card section representing each track in the submission. This can either be a horizontal scroll of track cards, or an admin just sees a list of each track and clicking on one shows that track info + waveform. 3. the right-side glass floating panel (also only viewable when submission selected). This is the admin actions panel where they can grade the submission and leave notes as outlined above, and submit the review.
+The left and right floating side panels should have the glass morhpism aesthetic.
+Finally add a link (maybe just to footer for now) to Email templates. Where they can edit html email templates

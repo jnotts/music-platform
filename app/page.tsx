@@ -2,12 +2,9 @@
 
 import Link from "next/link";
 import { useState, useRef, useCallback, useEffect } from "react";
-import { useTheme } from "next-themes";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Sun,
-  Moon,
   Upload,
   Plus,
   Check,
@@ -23,6 +20,7 @@ import { artistSchema, type ArtistInput } from "@/lib/schemas/submission";
 import { UPLOAD_CONFIG } from "@/lib/validation/upload";
 import SocialInput from "@/components/SocialInput";
 import { TrackCard, type TrackMetadata } from "@/components/TrackCard";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface SubmissionResult {
   submission_id: string;
@@ -31,13 +29,6 @@ interface SubmissionResult {
 }
 
 export default function ArtistSubmissionPage() {
-  const { theme, setTheme } = useTheme();
-  // Needed to prevent hydration mismatch
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
   const [showSocialsManual, setShowSocialsManual] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [submissionResult, setSubmissionResult] =
@@ -257,23 +248,7 @@ export default function ArtistSubmissionPage() {
 
       {/* Theme Toggle */}
       <div className="fixed top-6 right-6 z-50">
-        <button
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="flex items-center cursor-pointer gap-2 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md transition-all border border-border bg-surface/60 hover:bg-surface dark:border-white/10 dark:bg-white/10 dark:hover:bg-white/20"
-        >
-          {mounted &&
-            (theme === "dark" ? (
-              <>
-                <Sun size={14} />
-                <span>Light Mode</span>
-              </>
-            ) : (
-              <>
-                <Moon size={14} />
-                <span>Dark Mode</span>
-              </>
-            ))}
-        </button>
+        <ThemeToggle />
       </div>
 
       <div
@@ -598,15 +573,15 @@ export default function ArtistSubmissionPage() {
       </div>
 
       {/* Footer */}
-      {hasTracks && (
-        <footer className="fixed bottom-0 left-0 right-0 glass border-0 hidden lg:block">
-          <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-4">
-            <Link
-              href="/admin/login"
-              className="text-xs font-medium transition-colors text-muted hover:text-foreground dark:hover:text-white"
-            >
-              Admin Access
-            </Link>
+      <footer className="fixed bottom-0 left-0 right-0 glass border-0 hidden lg:block">
+        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-4">
+          <Link
+            href="/admin/login"
+            className="text-xs font-medium transition-colors text-muted hover:text-foreground dark:hover:text-white"
+          >
+            Admin Access
+          </Link>
+          {hasTracks ? (
             <button
               type="submit"
               form="submission-form"
@@ -625,9 +600,11 @@ export default function ArtistSubmissionPage() {
                 ? "Uploading..."
                 : "Submit Demo"}
             </button>
-          </div>
-        </footer>
-      )}
+          ) : (
+            <div />
+          )}
+        </div>
+      </footer>
     </div>
   );
 }

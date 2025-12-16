@@ -33,8 +33,6 @@
 
   --color-success: #16a34a;
   --color-error: #ef4444;
-
-  --backdrop-blur: 12px;
 }
 
 /* ============================================
@@ -57,23 +55,37 @@
   }
 
   body {
+    position: relative;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: var(--color-foreground);
     font-family: var(--font-sans), system-ui, sans-serif;
     background-color: #f8f9fa;
+  }
+
+  /* Blurred background layer */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-image: url("/assets/bg-light-2.jpeg");
-    backdrop-filter: blur(24px);
     background-size: cover;
     background-position: center;
-    background-attachment: fixed;
     background-repeat: no-repeat;
+    filter: blur(0px);
+    z-index: -1;
   }
 
   .dark body {
     background-color: #050505;
-    background-image: url("/assets/bg-dark.jpg");
-    backdrop-filter: blur(20px);
+  }
+
+  .dark body::before {
+    background-image: url("/assets/bg-dark-2.jpeg");
+    filter: blur(0px);
   }
 }
 
@@ -81,30 +93,61 @@
    COMPONENTS - Reusable Patterns (minimal)
    ============================================ */
 @layer components {
-  /* Generic glass treatment */
+  /* Premium Glass Effect */
   .glass {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    backdrop-filter: blur(var(--backdrop-blur));
+    @apply backdrop-blur-md;
+    background: linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0.2) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.1);
   }
 
-  /* Card with hover lift */
+  .dark .glass {
+    @apply backdrop-blur-lg;
+    background: linear-gradient(
+      145deg,
+      rgba(20, 20, 20, 0.6) 0%,
+      rgba(20, 20, 20, 0.4) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  /* Interactive Card (Hover Lift + Glass) */
   .card {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    backdrop-filter: blur(var(--backdrop-blur));
+    @apply backdrop-blur-sm;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 1rem;
     padding: 1.25rem;
-    box-shadow: 0 4px 6px -1px var(--color-shadow-md),
-      0 2px 4px -2px var(--color-shadow-md-secondary);
-    transition: all 200ms ease-out;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     transform: translateZ(0);
+    box-shadow: var(--color-shadow-md);
+  }
+
+  .dark .card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .card:hover {
-    transform: translateY(-0.125rem) scale(1.02) translateZ(0);
-    box-shadow: 0 20px 25px -5px var(--color-shadow-lg),
-      0 8px 10px -6px var(--color-shadow-lg-secondary);
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.1),
+      0 10px 20px -5px rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.7);
+    border-color: var(--color-primary);
+  }
+
+  .dark .card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--color-primary);
+    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.4),
+      0 10px 20px -5px rgba(0, 0, 0, 0.2);
   }
 
   /* Form input */
