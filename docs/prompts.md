@@ -58,3 +58,11 @@ Provide fields for internal notes and constructive feedback for the artist.
 UI should consist of 3 main sections. 1. Left glass floating side panel which contains a searchable and filterable list of submissions. Takes up slightly more width on left when no submission selected. When one is selected, width is smaller but can still see list. Can also toggle to collapse to the side completely 2. Only when submission is clicked, the main section in the middle contains all the submission info: metadata, with some sort of scrollable card section representing each track in the submission. This can either be a horizontal scroll of track cards, or an admin just sees a list of each track and clicking on one shows that track info + waveform. 3. the right-side glass floating panel (also only viewable when submission selected). This is the admin actions panel where they can grade the submission and leave notes as outlined above, and submit the review.
 The left and right floating side panels should have the glass morhpism aesthetic.
 Finally add a link (maybe just to footer for now) to Email templates. Where they can edit html email templates
+
+### Prompt 006 - setup resend for email
+
+- Set up transactional email integration - use resend
+- Create email_templates table in database
+- Build template variable replacement system ({{artist_name}}, {{track_titles}}, etc.)
+- API endpoints: GET/PUT /api/admin/templates/:key, POST /api/emails/send
+- Implement automatic confirmation email on submission
