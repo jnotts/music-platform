@@ -4,7 +4,7 @@ import { AdminSubmission } from "@/types/admin-submission";
 interface SubmissionListProps {
   submissions: AdminSubmission[];
   selectedId: string | null;
-  onSelect: (id: string) => void;
+  setSelectedId: (id: string | null) => void;
   isCollapsed?: boolean;
 }
 
@@ -34,7 +34,7 @@ function formatTimeAgo(dateString: string) {
 export function SubmissionList({
   submissions,
   selectedId,
-  onSelect,
+  setSelectedId,
   isCollapsed = false,
 }: SubmissionListProps) {
   if (isCollapsed) return null;
@@ -47,7 +47,18 @@ export function SubmissionList({
     >
       {/* Header / Search */}
       <div className="p-4 border-b border-border space-y-3">
-        <h2 className="font-semibold text-lg px-1">Submissions</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold text-lg px-1">Submissions</h2>
+          {selectedId && (
+            <button
+              onClick={() => setSelectedId(null)}
+              className="underline text-muted/60 text-xs cursor-pointer"
+            >
+              Overview
+            </button>
+          )}
+        </div>
+
         <div className="relative">
           <Search
             className="absolute left-3 top-1/2 -translate-y-1/2 text-muted"
@@ -76,7 +87,7 @@ export function SubmissionList({
         {submissions.map((sub) => (
           <button
             key={sub.id}
-            onClick={() => onSelect(sub.id)}
+            onClick={() => setSelectedId(sub.id)}
             className={`w-full text-left p-3 cursor-pointer rounded-xl transition-all ${
               selectedId === sub.id
                 ? "bg-primary/20 border-primary/30"

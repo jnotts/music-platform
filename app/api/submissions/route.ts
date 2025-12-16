@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { ok, errors } from "@/lib/api";
 import { createAdminClient } from "@/lib/supabase/server";
 import { createSubmissionSchema } from "@/lib/schemas";
+import { sendConfirmationEmail } from "@/lib/email/service";
 
 /**
  * POST /api/submissions
@@ -80,7 +81,19 @@ export async function POST(request: NextRequest) {
       return errors.internal("Failed to create track records");
     }
 
-    // TODO: Send confirmation email
+    // Send confirmation email
+    const emailResult = await sendConfirmationEmail({
+      artistName: artistData.name,
+      artistEmail: artistData.email,
+      submissionId: submissionData.id,
+      trackTitles: tracksData.map((t) => t.title || t.filename || "Untitled"),
+    });
+
+    if (!emailResult.success) {
+      console.error("Failed to send confirmation email:", emailResult.error);
+      // Continue anyway - don't fail the submission
+    }
+
     // TODO: Broadcast realtime event for new submission
 
     return ok(

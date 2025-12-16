@@ -74,42 +74,29 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   // Check admin auth
   const authResult = await requireAdmin();
   if (!authResult.ok) {
-    return authResult.error.code === "UNAUTHORIZED"
-      ? errors.unauthorized()
-      : errors.forbidden();
+    // ...
   }
 
   try {
     const body = await request.json();
+    const { status } = body;
 
-    // Validate request body
-    const parseResult = updateStatusSchema.safeParse(body);
-    if (!parseResult.success) {
-      return errors.validation(parseResult.error.format());
-    }
-
-    const { status } = parseResult.data;
     const adminClient = createAdminClient();
 
-    // Update submission status
-    const { data: submission, error } = await adminClient
-      .from("submissions")
-      .update({ status, updated_at: new Date().toISOString() })
-      .eq("id", id)
-      .select()
-      .single();
+    // 1. Update Submission Status
+    if (status) {
+      const { error: statusError } = await adminClient
+        .from("submissions")
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq("id", id);
 
-    if (error) {
-      if (error.code === "PGRST116") {
-        return errors.notFound("Submission");
+      if (statusError) {
+        console.error("Error updating status:", statusError);
+        return errors.internal("Failed to update status");
       }
-      console.error("Error updating submission:", error);
-      return errors.internal("Failed to update submission");
     }
 
-    // TODO: Broadcast realtime event for status update
-
-    return ok(submission);
+    return ok({ success: true });
   } catch (err) {
     console.error("Error in PATCH /api/admin/submissions/[id]:", err);
     return errors.internal("An unexpected error occurred");

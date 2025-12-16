@@ -1,12 +1,10 @@
 import { z } from "zod/v4";
 
-/**
- * Schema for creating/updating a review (PUT /api/admin/reviews/[submissionId]).
- */
+// Strict Review Table Schema
 export const reviewSchema = z.object({
-  grade: z.number().int().min(1).max(10).nullable().optional(),
-  internal_notes: z.string().nullable().optional(),
-  feedback_for_artist: z.string().nullable().optional(),
+  grade: z.coerce.number().min(0).max(10).optional().nullable(),
+  internal_notes: z.string().optional(),
+  feedback_for_artist: z.string().optional(),
 });
 
 export type ReviewInput = z.infer<typeof reviewSchema>;

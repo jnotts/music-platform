@@ -30,7 +30,7 @@ export function TrackCard({
   const isComplete = upload.status === "complete";
 
   return (
-    <div className={`card ${isError ? "border-error/50!" : ""}`}>
+    <div className={`card glass ${isError ? "border-error/50!" : ""}`}>
       {/* Header */}
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 overflow-hidden">

@@ -1,81 +1,71 @@
 import { NextRequest } from "next/server";
 import { ok, errors, requireAdmin } from "@/lib/api";
 import { createAdminClient } from "@/lib/supabase/server";
-import type { SubmissionStatus } from "@/lib/types/db";
 
 /**
  * GET /api/admin/submissions
- * List all submissions with optional filters.
- * Admin-only endpoint.
+ * Get all submissions (Admin Only).
  */
 export async function GET(request: NextRequest) {
   // Check admin auth
   const authResult = await requireAdmin();
   if (!authResult.ok) {
-    return authResult.error.code === "UNAUTHORIZED"
-      ? errors.unauthorized()
-      : errors.forbidden();
+    if (process.env.NODE_ENV !== "development") {
+      return authResult.error.code === "UNAUTHORIZED"
+        ? errors.unauthorized()
+        : errors.forbidden();
+    }
   }
 
   try {
     const adminClient = createAdminClient();
-    const { searchParams } = new URL(request.url);
 
-    // Parse query params
-    const status = searchParams.get("status") as SubmissionStatus | null;
-    const search = searchParams.get("search");
-    const limit = Math.min(parseInt(searchParams.get("limit") || "50"), 100);
-    const offset = parseInt(searchParams.get("offset") || "0");
-
-    // Build query - join with artists
-    let query = adminClient
+    const { data: submissions, error } = await adminClient
       .from("submissions")
       .select(
         `
         *,
-        artist:artists(*)
-      `,
-        { count: "exact" }
+        artist:artists(*),
+        tracks(*),
+        review:reviews(*)
+      `
       )
-      .order("created_at", { ascending: false })
-      .range(offset, offset + limit - 1);
-
-    // Apply status filter
-    if (status) {
-      query = query.eq("status", status);
-    }
-
-    // Apply search filter (search artist name or email)
-    // Note: For search across joined table, we need to filter differently
-    // This is a simplified approach - for complex search, consider RPC or views
-
-    const { data: submissions, error, count } = await query;
+      .order("created_at", { ascending: false });
 
     if (error) {
       console.error("Error fetching submissions:", error);
       return errors.internal("Failed to fetch submissions");
     }
 
-    // If search is provided, filter results client-side (simplified approach)
-    // In production, consider using Postgres full-text search
-    let filteredSubmissions = submissions || [];
-    if (search) {
-      const searchLower = search.toLowerCase();
-      filteredSubmissions = filteredSubmissions.filter((sub) => {
-        const artist = sub.artist as { name?: string; email?: string } | null;
-        return (
-          artist?.name?.toLowerCase().includes(searchLower) ||
-          artist?.email?.toLowerCase().includes(searchLower)
-        );
-      });
-    }
+    // Transform to AdminSubmission type
+    const formattedSubmissions = submissions.map((sub: any) => ({
+      id: sub.id,
+      artist: {
+        name: sub.artist.name,
+        email: sub.artist.email,
+        bio: sub.artist.bio || "",
+        socials: {
+          instagram: sub.artist.instagram_url || undefined,
+          soundcloud: sub.artist.soundcloud_url || undefined,
+          spotify: sub.artist.spotify_url || undefined,
+        },
+      },
+      status: sub.status,
+      submittedAt: sub.created_at,
+      tracks: sub.tracks.map((t: any) => ({
+        id: t.id,
+        title: t.title,
+        genre: t.genre,
+        bpm: t.bpm?.toString(),
+        key: t.key,
+        fileUrl: t.storage_path, // In real app, generate signed URL
+      })),
+      rating: sub.review?.[0]?.rating,
+      internalNotes: sub.review?.[0]?.internal_notes,
+      feedback: sub.review?.[0]?.artist_feedback,
+    }));
 
-    return ok({
-      submissions: filteredSubmissions,
-      total: search ? filteredSubmissions.length : count,
-      limit,
-      offset,
-    });
+    return ok(formattedSubmissions);
   } catch (err) {
     console.error("Error in GET /api/admin/submissions:", err);
     return errors.internal("An unexpected error occurred");

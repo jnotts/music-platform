@@ -342,7 +342,7 @@ export default function ArtistSubmissionPage() {
           >
             {/* Left Column: Artist Profile */}
             <div className="space-y-6 lg:col-span-4 lg:sticky lg:top-8 lg:h-fit">
-              <div className="card !p-6">
+              <div className="glass backdrop-grayscale-0 p-6">
                 <h2 className="mb-6 text-lg font-semibold">Artist Profile</h2>
 
                 <div className="space-y-5">
