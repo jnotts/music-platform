@@ -576,7 +576,7 @@ export default function ArtistSubmissionPage() {
       <footer className="glass fixed right-0 bottom-0 left-0 hidden border-0 lg:block">
         <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-4">
           <Link
-            href="/admin/login"
+            href="/login"
             className="text-xs font-medium text-muted transition-colors hover:text-foreground dark:hover:text-white"
           >
             Admin Access

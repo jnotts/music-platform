@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createBrowserClient } from "@/lib/supabase/client";
@@ -12,8 +12,28 @@ export default function AdminLoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Start as true while checking session
   const [error, setError] = useState<string | null>(null);
+
+  // Check if user is already logged in
+  useEffect(() => {
+    const checkSession = async () => {
+      const supabase = createBrowserClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session) {
+        // User already logged in, redirect to admin
+        router.push("/admin/submissions");
+      } else {
+        // No session, show login form
+        setLoading(false);
+      }
+    };
+
+    checkSession();
+  }, [router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +61,18 @@ export default function AdminLoginPage() {
       setLoading(false);
     }
   };
+
+  // Show loading state while checking session
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#0B0D0F] text-[#F5F3EE]">
+        <div className="text-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#2D7DFF] border-t-transparent mx-auto" />
+          <p className="mt-4 text-sm text-[#A8A29E]">Checking session...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#0B0D0F] text-[#F5F3EE]">
