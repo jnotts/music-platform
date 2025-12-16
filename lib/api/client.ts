@@ -95,6 +95,22 @@ export async function saveReview(
   }
 }
 
+/**
+ * Fetch a specific review by submission ID
+ */
+export async function getReview(
+  submissionId: string,
+): Promise<ReviewInput | null> {
+  const response = await fetch(`/api/admin/reviews/${submissionId}`);
+  const result = await response.json();
+
+  if (!result.ok) {
+    throw new Error(result.error?.message || "Failed to fetch review");
+  }
+
+  return result.data;
+}
+
 interface PlaybackResponse {
   url: string;
 }

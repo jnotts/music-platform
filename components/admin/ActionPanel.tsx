@@ -20,9 +20,13 @@ import { useEffect, useState } from "react";
 
 interface ActionPanelProps {
   submission: AdminSubmission;
+  initialReviewData?: ReviewInput | null;
 }
 
-export function ActionPanel({ submission }: ActionPanelProps) {
+export function ActionPanel({
+  submission,
+  initialReviewData,
+}: ActionPanelProps) {
   const { mutateAsync: updateStatus, isPending: isUpdatingStatus } =
     useUpdateSubmissionStatus();
   const { mutateAsync: saveReview, isPending: isSavingReview } =
@@ -50,9 +54,11 @@ export function ActionPanel({ submission }: ActionPanelProps) {
   // Sync with submission prop changes
   useEffect(() => {
     form.reset({
-      grade: submission.rating || 0,
-      internal_notes: submission.internalNotes || "",
-      feedback_for_artist: submission.feedback || "",
+      grade: initialReviewData?.grade ?? submission.rating ?? 0,
+      internal_notes:
+        initialReviewData?.internal_notes ?? submission.internalNotes ?? "",
+      feedback_for_artist:
+        initialReviewData?.feedback_for_artist ?? submission.feedback ?? "",
     });
     setError(null);
     setTargetStatus(
@@ -60,7 +66,7 @@ export function ActionPanel({ submission }: ActionPanelProps) {
         ? submission.status
         : null,
     );
-  }, [submission, form]);
+  }, [submission, form, initialReviewData]);
 
   const handleStatusToggle = async () => {
     const newStatus =

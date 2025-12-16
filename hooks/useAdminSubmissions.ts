@@ -3,6 +3,7 @@ import {
   getAdminSubmissions,
   updateSubmissionStatus,
   saveReview,
+  getReview,
 } from "@/lib/api/client";
 import type { SubmissionStatus } from "@/types/admin-submission";
 import type { ReviewInput } from "@/lib/schemas/review";
@@ -42,5 +43,13 @@ export function useSaveReview() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ADMIN_SUBMISSIONS_KEY });
     },
+  });
+}
+
+export function useSubmissionReview(submissionId: string | null) {
+  return useQuery({
+    queryKey: ["review", submissionId],
+    queryFn: () => (submissionId ? getReview(submissionId) : null),
+    enabled: !!submissionId,
   });
 }

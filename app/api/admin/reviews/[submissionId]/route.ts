@@ -8,6 +8,47 @@ type RouteParams = {
 };
 
 /**
+ * GET /api/admin/reviews/[submissionId]
+ * Fetch the review for a submission.
+ * Admin-only endpoint.
+ */
+export async function GET(request: NextRequest, { params }: RouteParams) {
+  const { submissionId } = await params;
+
+  // Check admin auth
+  const authResult = await requireAdmin();
+  if (!authResult.ok) {
+    return authResult.error.code === "UNAUTHORIZED"
+      ? errors.unauthorized()
+      : errors.forbidden();
+  }
+
+  try {
+    const adminClient = createAdminClient();
+
+    const { data: review, error } = await adminClient
+      .from("reviews")
+      .select("*")
+      .eq("submission_id", submissionId)
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116") {
+        // Not found is okay, return null to indicate no review yet
+        return ok(null);
+      }
+      console.error("Error fetching review:", error);
+      return errors.internal("Failed to fetch review");
+    }
+
+    return ok(review);
+  } catch (err) {
+    console.error("Error in GET /api/admin/reviews/[submissionId]:", err);
+    return errors.internal("An unexpected error occurred");
+  }
+}
+
+/**
  * PUT /api/admin/reviews/[submissionId]
  * Create or update a review for a submission.
  * Admin-only endpoint.

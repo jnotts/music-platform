@@ -7,7 +7,10 @@ import { SubmissionDetail } from "@/components/admin/SubmissionDetail";
 import { ActionPanel } from "@/components/admin/ActionPanel";
 import { ArrowLeft, Layout, Loader2 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { useAdminSubmissions } from "@/hooks/useAdminSubmissions";
+import {
+  useAdminSubmissions,
+  useSubmissionReview,
+} from "@/hooks/useAdminSubmissions";
 
 /**
  * Admin submissions main interactive prototype.
@@ -17,6 +20,7 @@ export default function AdminSubmissionsPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const selectedSubmission = submissions?.find((s) => s.id === selectedId);
+  const { data: reviewData } = useSubmissionReview(selectedId);
 
   return (
     <div className="relative flex h-screen min-h-screen flex-col overflow-hidden transition-colors duration-300">
@@ -88,6 +92,7 @@ export default function AdminSubmissionsPage() {
                     <ActionPanel
                       key={selectedSubmission.id}
                       submission={selectedSubmission}
+                      initialReviewData={reviewData}
                     />
                   </div>
                 </div>
