@@ -66,3 +66,7 @@ Finally add a link (maybe just to footer for now) to Email templates. Where they
 - Build template variable replacement system ({{artist_name}}, {{track_titles}}, etc.)
 - API endpoints: GET/PUT /api/admin/templates/:key, POST /api/emails/send
 - Implement automatic confirmation email on submission
+
+### Prompt 007 - add media player and streaming
+
+Implement streaming playback for submissions using wavesurfer.js and Supabase Storage signed URLs to stream the audio (no local downloads).

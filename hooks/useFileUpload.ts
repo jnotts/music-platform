@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import { validateFile, UPLOAD_CONFIG } from "@/lib/validation/upload";
-import type { SignUploadResponse } from "@/lib/schemas/upload";
+import { getSignedUploadUrl, deleteUploadedFile } from "@/lib/api/client";
 
 export type UploadStatus = "idle" | "uploading" | "complete" | "error";
 
@@ -131,30 +131,12 @@ export function useFileUpload(): UseFileUploadReturn {
 
       try {
         // 1. Get signed URL
-        const signResponse = await fetch("/api/uploads/sign", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            filename: file.name,
-            contentType: file.type || "application/octet-stream",
-            sizeBytes: file.size,
-          }),
-          signal: controller.signal,
-        });
-
-        if (!signResponse.ok) {
-          const errorData = await signResponse.json().catch(() => ({}));
-          throw new Error(
-            errorData.error?.message || "Failed to get upload URL",
-          );
-        }
-
-        const result = await signResponse.json();
-        if (!result.ok) {
-          throw new Error(result.error?.message || "Failed to get upload URL");
-        }
-
-        const { signedUrl, storagePath } = result.data as SignUploadResponse;
+        const { signedUrl, storagePath } = await getSignedUploadUrl(
+          file.name,
+          file.type || "application/octet-stream",
+          file.size,
+          controller.signal,
+        );
 
         // 2. Upload file with progress tracking
         await uploadWithProgress(
@@ -238,11 +220,7 @@ export function useFileUpload(): UseFileUploadReturn {
 
       // Delete from storage if upload completed
       if (upload?.storagePath) {
-        fetch("/api/uploads/delete", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ storagePath: upload.storagePath }),
-        }).catch((err) => {
+        deleteUploadedFile(upload.storagePath).catch((err) => {
           console.error("Failed to delete file from storage:", err);
           // Continue anyway - file will be cleaned up by background job
         });
@@ -273,11 +251,7 @@ export function useFileUpload(): UseFileUploadReturn {
     // Delete all completed uploads from storage
     uploads.forEach((upload) => {
       if (upload.storagePath) {
-        fetch("/api/uploads/delete", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ storagePath: upload.storagePath }),
-        }).catch((err) => {
+        deleteUploadedFile(upload.storagePath).catch((err) => {
           console.error("Failed to delete file from storage:", err);
         });
       }

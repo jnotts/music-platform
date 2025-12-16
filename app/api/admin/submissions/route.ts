@@ -58,7 +58,10 @@ export async function GET(request: NextRequest) {
         genre: t.genre,
         bpm: t.bpm?.toString(),
         key: t.key,
-        fileUrl: t.storage_path, // In real app, generate signed URL
+        storagePath: t.storage_path,
+        duration: t.duration_seconds
+          ? formatDuration(t.duration_seconds)
+          : undefined,
       })),
       rating: sub.review?.[0]?.rating,
       internalNotes: sub.review?.[0]?.internal_notes,
@@ -70,4 +73,10 @@ export async function GET(request: NextRequest) {
     console.error("Error in GET /api/admin/submissions:", err);
     return errors.internal("An unexpected error occurred");
   }
+}
+
+function formatDuration(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
 }

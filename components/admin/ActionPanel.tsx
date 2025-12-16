@@ -38,7 +38,16 @@ export function ActionPanel({ submission }: ActionPanelProps) {
     },
   });
 
-  // Reset form when submission changes
+  // Track the intended status change locally
+  const [targetStatus, setTargetStatus] = useState<
+    "approved" | "rejected" | null
+  >(
+    submission.status === "approved" || submission.status === "rejected"
+      ? submission.status
+      : null,
+  );
+
+  // Sync with submission prop changes
   useEffect(() => {
     form.reset({
       grade: submission.rating || 0,
@@ -46,6 +55,11 @@ export function ActionPanel({ submission }: ActionPanelProps) {
       feedback_for_artist: submission.feedback || "",
     });
     setError(null);
+    setTargetStatus(
+      submission.status === "approved" || submission.status === "rejected"
+        ? submission.status
+        : null,
+    );
   }, [submission, form]);
 
   const handleStatusToggle = async () => {
@@ -54,20 +68,26 @@ export function ActionPanel({ submission }: ActionPanelProps) {
     await updateStatus({ id: submission.id, status: newStatus });
   };
 
-  const handleAction = async (action: "approved" | "rejected") => {
+  const toggleTargetStatus = (status: "approved" | "rejected") => {
+    setTargetStatus((prev) => (prev === status ? null : status));
+    form.clearErrors(); // Clear previous errors
+    if (error) setError(null);
+  };
+
+  const handleSubmit = async () => {
     setError(null);
     form.clearErrors(); // Clear previous errors
     const data = form.getValues();
 
-    // Manual Validation based on action
-    if (action === "approved") {
+    // Validation only if a status is selected
+    if (targetStatus === "approved") {
       if (!data.grade || data.grade < 1) {
         form.setError("grade", { message: "Rating required for approval" });
         return;
       }
     }
 
-    if (action === "rejected") {
+    if (targetStatus === "rejected") {
       if (!data.feedback_for_artist || data.feedback_for_artist.length < 5) {
         form.setError("feedback_for_artist", {
           message: "Feedback required for rejection (min 5 chars)",
@@ -87,32 +107,15 @@ export function ActionPanel({ submission }: ActionPanelProps) {
         },
       });
 
-      // 2. Update Status
-      await updateStatus({ id: submission.id, status: action });
-    } catch (err) {
-      console.error(err);
-      setError("Failed to update submission. Please try again.");
-    }
-  };
+      // 2. Update Status if changed and selected
+      if (targetStatus && targetStatus !== submission.status) {
+        await updateStatus({ id: submission.id, status: targetStatus });
+      }
 
-  // Just save review without changing status
-  const handleSaveDraft = async () => {
-    setError(null);
-    form.clearErrors(); // Clear previous errors
-    try {
-      const data = form.getValues();
-      await saveReview({
-        submissionId: submission.id,
-        data: {
-          grade: data.grade || 0,
-          internal_notes: data.internal_notes || undefined,
-          feedback_for_artist: data.feedback_for_artist || undefined,
-        },
-      });
       // Optional: show toast
     } catch (err) {
       console.error(err);
-      setError("Failed to save draft. Please try again.");
+      setError("Failed to submit review. Please try again.");
     }
   };
 
@@ -151,10 +154,10 @@ export function ActionPanel({ submission }: ActionPanelProps) {
         {/* Status Actions */}
         <div className="flex gap-2">
           <button
-            onClick={() => handleAction("approved")}
+            onClick={() => toggleTargetStatus("approved")}
             disabled={isPending}
             className={`flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg p-2 transition-all active:scale-95 ${
-              submission.status === "approved"
+              targetStatus === "approved"
                 ? "border-transparent bg-green-500 font-medium text-white shadow-lg shadow-green-500/20 hover:bg-green-600"
                 : "border-border bg-surface text-muted hover:border-green-500/50 hover:bg-green-500/10 hover:text-green-500"
             }`}
@@ -163,10 +166,10 @@ export function ActionPanel({ submission }: ActionPanelProps) {
             Approve
           </button>
           <button
-            onClick={() => handleAction("rejected")}
+            onClick={() => toggleTargetStatus("rejected")}
             disabled={isPending}
             className={`flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg p-2 transition-all active:scale-95 ${
-              submission.status === "rejected"
+              targetStatus === "rejected"
                 ? "border-transparent bg-red-500 font-medium text-white shadow-lg shadow-red-500/20 hover:bg-red-600"
                 : "border-border bg-surface text-muted hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-500"
             }`}
@@ -201,9 +204,7 @@ export function ActionPanel({ submission }: ActionPanelProps) {
         {/* Rating */}
         <div
           className={`space-y-3 transition-opacity duration-300 ${
-            submission.status === "rejected"
-              ? "pointer-events-none opacity-50"
-              : ""
+            targetStatus === "rejected" ? "pointer-events-none opacity-50" : ""
           }`}
         >
           <div className="flex items-center justify-between">
@@ -298,7 +299,7 @@ export function ActionPanel({ submission }: ActionPanelProps) {
       {/* Save Action */}
       <div className="sticky bottom-0 border-t border-border bg-surface/50 p-4 backdrop-blur-md">
         <button
-          onClick={() => handleSaveDraft()}
+          onClick={() => handleSubmit()}
           disabled={isPending}
           className="text-primary-foreground flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3 font-medium shadow-lg shadow-primary/20 transition-colors hover:bg-primary/90"
         >

@@ -3,6 +3,7 @@
  */
 
 import type { CreateSubmissionInput } from "@/lib/schemas/submission";
+import type { SignUploadResponse } from "@/lib/schemas/upload";
 
 export interface SubmitDemoResponse {
   submission_id: string;
@@ -92,4 +93,65 @@ export async function saveReview(
   if (!result.ok) {
     throw new Error(result.error?.message || "Failed to save review");
   }
+}
+
+interface PlaybackResponse {
+  url: string;
+}
+
+/**
+ * Get a signed URL for a track
+ */
+export async function getTrackUrl(trackId: string): Promise<string> {
+  const response = await fetch(`/api/admin/tracks/${trackId}/play`);
+  if (!response.ok) {
+    throw new Error("Failed to get track URL");
+  }
+  const data = (await response.json()) as { data: PlaybackResponse };
+  return data.data.url;
+}
+
+/**
+ * Get a signed URL for file upload
+ */
+export async function getSignedUploadUrl(
+  filename: string,
+  contentType: string,
+  sizeBytes: number,
+  signal?: AbortSignal,
+): Promise<SignUploadResponse> {
+  const response = await fetch("/api/uploads/sign", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      filename,
+      contentType,
+      sizeBytes,
+    }),
+    signal,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error?.message || "Failed to get upload URL");
+  }
+
+  const result = await response.json();
+
+  if (!result.ok) {
+    throw new Error(result.error?.message || "Failed to get upload URL");
+  }
+
+  return result.data;
+}
+
+/**
+ * Delete an uploaded file
+ */
+export async function deleteUploadedFile(storagePath: string): Promise<void> {
+  await fetch("/api/uploads/delete", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ storagePath }),
+  });
 }

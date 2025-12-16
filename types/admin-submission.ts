@@ -11,7 +11,7 @@ export interface AdminTrack {
   bpm?: string;
   key?: string;
   duration?: string;
-  fileUrl?: string; // Mock URL for now
+  storagePath: string; // Used to fetch signed URL
 }
 
 export interface AdminSubmission {
@@ -56,8 +56,16 @@ export const MOCK_SUBMISSIONS: AdminSubmission[] = [
         genre: "Deep House",
         bpm: "124",
         key: "Am",
+        storagePath: "mock/path/t1.mp3",
       },
-      { id: "t2", title: "Solar Flare", genre: "Ambient", bpm: "90", key: "C" },
+      {
+        id: "t2",
+        title: "Solar Flare",
+        genre: "Ambient",
+        bpm: "90",
+        key: "C",
+        storagePath: "mock/path/t2.mp3",
+      },
     ],
   },
   {
@@ -79,6 +87,7 @@ export const MOCK_SUBMISSIONS: AdminSubmission[] = [
         genre: "Indie Rock",
         bpm: "140",
         key: "E",
+        storagePath: "mock/path/t3.mp3",
       },
     ],
     rating: 7,
@@ -95,7 +104,14 @@ export const MOCK_SUBMISSIONS: AdminSubmission[] = [
     status: "rejected",
     submittedAt: "2025-12-10T09:00:00Z",
     tracks: [
-      { id: "t4", title: "Banger 1", genre: "Dubstep", bpm: "150", key: "Fm" },
+      {
+        id: "t4",
+        title: "Banger 1",
+        genre: "Dubstep",
+        bpm: "150",
+        key: "Fm",
+        storagePath: "mock/path/t4.mp3",
+      },
     ],
     feedback: "Not quite what we are looking for right now.",
   },
