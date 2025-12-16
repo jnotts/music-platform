@@ -27,7 +27,9 @@ export function SubmissionDetail({ submission }: SubmissionDetailProps) {
             </a>
             {submission.artist.socials.instagram && (
               <a
-                href="#"
+                href={submission.artist.socials.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-1.5 transition-colors hover:text-primary"
               >
                 <InstagramIcon />
@@ -36,7 +38,9 @@ export function SubmissionDetail({ submission }: SubmissionDetailProps) {
             )}
             {submission.artist.socials.spotify && (
               <a
-                href="#"
+                href={submission.artist.socials.spotify}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-1.5 transition-colors hover:text-primary"
               >
                 <SpotifyIcon />
@@ -45,7 +49,9 @@ export function SubmissionDetail({ submission }: SubmissionDetailProps) {
             )}
             {submission.artist.socials.soundcloud && (
               <a
-                href="#"
+                href={submission.artist.socials.soundcloud}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-1.5 transition-colors hover:text-primary"
               >
                 <SoundCloudIcon />

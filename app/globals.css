@@ -39,6 +39,7 @@
    BASE STYLES w/ GRADIENTS
    ============================================ */
 @layer base {
+
   /* Dark mode variable overrides */
   .dark {
     --color-foreground: #f5f3ee;
@@ -93,14 +94,13 @@
    COMPONENTS - Reusable Patterns (minimal)
    ============================================ */
 @layer components {
+
   /* Premium Glass Effect */
   .glass {
     @apply backdrop-blur-md;
-    background: linear-gradient(
-      145deg,
-      rgba(255, 255, 255, 0.4) 0%,
-      rgba(255, 255, 255, 0.2) 100%
-    );
+    background: linear-gradient(145deg,
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(255, 255, 255, 0.2) 100%);
     border: 1px solid rgba(255, 255, 255, 0.3);
     box-shadow:
       0 8px 32px 0 rgba(0, 0, 0, 0.1),
@@ -109,11 +109,9 @@
 
   .dark .glass {
     @apply backdrop-blur-lg;
-    background: linear-gradient(
-      145deg,
-      rgba(20, 20, 20, 0.6) 0%,
-      rgba(20, 20, 20, 0.4) 100%
-    );
+    background: linear-gradient(145deg,
+        rgba(20, 20, 20, 0.6) 0%,
+        rgba(20, 20, 20, 0.4) 100%);
     border: 1px solid rgba(255, 255, 255, 0.05);
     box-shadow:
       0 8px 32px 0 rgba(0, 0, 0, 0.4),
@@ -201,6 +199,7 @@
       0 2px 4px -2px var(--color-primary-shadow);
     transition: all 150ms ease-out;
     transform: translateZ(0);
+    cursor: pointer;
   }
 
   .btn-primary:hover {

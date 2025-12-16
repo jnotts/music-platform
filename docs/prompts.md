@@ -70,3 +70,12 @@ Finally add a link (maybe just to footer for now) to Email templates. Where they
 ### Prompt 007 - add media player and streaming
 
 Implement streaming playback for submissions using wavesurfer.js and Supabase Storage signed URLs to stream the audio (no local downloads).
+
+### Prompt 008 - implement email templates with TipTap editor
+
+implement the editable html email templates. See the docs first @docs/TECH_STACK.md @docs/PRD.md
+@docs/ASSIGNMENT.md .
+We need the templates to be editable and saved to the db. for now, consider only one template per email type/key, so admins only edit the current template for the key.
+here are relevant files: @lib/schemas/template.ts @app/admin/templates/page.tsx @app/admin/templates/[key]/page.tsx @app/api/admin/templates/[key]/route.ts @app/api/admin/templates/route.ts
+Make sure to create functinos that call the rest endpoints in @lib/api/client.ts and make use of these functions in custom hooks @hooks/ - then make use of the hooks in the relevant admin pages referenced above.
+Template use {{variables}} and integrate tiptap as the editor. Use bun for installs.

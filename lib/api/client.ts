@@ -171,3 +171,56 @@ export async function deleteUploadedFile(storagePath: string): Promise<void> {
     body: JSON.stringify({ storagePath }),
   });
 }
+
+import type { EmailTemplate } from "@/lib/types/db";
+import type { TemplateInput } from "@/lib/schemas/template";
+
+/**
+ * Fetch all email templates
+ */
+export async function getTemplates(): Promise<EmailTemplate[]> {
+  const response = await fetch("/api/admin/templates");
+  const result = await response.json();
+
+  if (!result.ok) {
+    throw new Error(result.error?.message || "Failed to fetch templates");
+  }
+
+  return result.data;
+}
+
+/**
+ * Fetch a single template by key
+ */
+export async function getTemplate(key: string): Promise<EmailTemplate> {
+  const response = await fetch(`/api/admin/templates/${key}`);
+  const result = await response.json();
+
+  if (!result.ok) {
+    throw new Error(result.error?.message || "Failed to fetch template");
+  }
+
+  return result.data;
+}
+
+/**
+ * Update a template
+ */
+export async function updateTemplate(
+  key: string,
+  data: TemplateInput,
+): Promise<EmailTemplate> {
+  const response = await fetch(`/api/admin/templates/${key}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+  if (!result.ok) {
+    throw new Error(result.error?.message || "Failed to update template");
+  }
+
+  return result.data;
+}

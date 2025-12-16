@@ -1,20 +1,141 @@
+"use client";
+
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, Check, AlertCircle } from "lucide-react";
+import type { EmailTemplateKey } from "@/lib/types/db";
+import { templateSchema, type TemplateInput } from "@/lib/schemas/template";
+import { useTemplate, useUpdateTemplate } from "@/hooks/useTemplates";
+import { TemplateEditor } from "@/components/admin/templates/TemplateEditor";
+import { TemplatePreview } from "@/components/admin/templates/TemplatePreview";
 
 type PageProps = {
   params: Promise<{ key: string }>;
 };
 
+const VALID_KEYS: EmailTemplateKey[] = ["confirmation", "approved", "rejected"];
+
 /**
  * Admin template editor page.
- * Edit subject and HTML content for a specific email template.
+ * Edit subject and HTML content for a specific email template with live preview.
  */
-export default async function AdminTemplateEditorPage({ params }: PageProps) {
-  const { key } = await params;
+export default function AdminTemplateEditorPage({ params }: PageProps) {
+  const { key } = use(params);
+  const templateKey = key as EmailTemplateKey;
+
+  const {
+    data: template,
+    isLoading,
+    error: fetchError,
+  } = useTemplate(templateKey);
+  const updateMutation = useUpdateTemplate();
+
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const form = useForm<TemplateInput>({
+    resolver: zodResolver(templateSchema),
+    defaultValues: {
+      subject: "",
+      html: "",
+    },
+  });
+
+  // Reset form when template loads
+  useEffect(() => {
+    if (template) {
+      form.reset({
+        subject: template.subject,
+        html: template.html,
+      });
+    }
+  }, [template, form]);
+
+  const handleSave = async (data: TemplateInput) => {
+    try {
+      await updateMutation.mutateAsync({ key: templateKey, data });
+      setSuccessMessage("Template saved successfully!");
+      // Reset form state to mark as not dirty after successful save
+      form.reset(data);
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (error) {
+      console.error("Failed to save template:", error);
+    }
+  };
+
+  // Validate key
+  if (!VALID_KEYS.includes(templateKey)) {
+    return (
+      <div className="min-h-screen bg-[#0B0D0F] text-[#F5F3EE]">
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-xl font-semibold text-red-400">
+              Invalid Template Key
+            </h1>
+            <p className="mt-2 text-[#A8A29E]">
+              Valid keys: {VALID_KEYS.join(", ")}
+            </p>
+            <Link
+              href="/admin/templates"
+              className="mt-4 inline-block text-[#2D7DFF] hover:underline"
+            >
+              ← Back to Templates
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#0B0D0F] text-[#F5F3EE]">
+        <header className="border-b border-white/10 px-6 py-4">
+          <div className="mx-auto max-w-7xl">
+            <div className="h-6 w-48 animate-pulse rounded bg-white/10" />
+          </div>
+        </header>
+        <main className="mx-auto max-w-7xl px-6 py-8">
+          <div className="space-y-4">
+            <div className="h-10 w-full animate-pulse rounded-xl bg-white/5" />
+            <div className="h-96 w-full animate-pulse rounded-xl bg-white/5" />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="min-h-screen bg-[#0B0D0F] text-[#F5F3EE]">
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <AlertCircle className="mx-auto mb-4 text-red-400" size={40} />
+            <h1 className="text-xl font-semibold text-red-400">
+              Failed to Load Template
+            </h1>
+            <p className="mt-2 text-[#A8A29E]">
+              {fetchError instanceof Error
+                ? fetchError.message
+                : "Unknown error"}
+            </p>
+            <Link
+              href="/admin/templates"
+              className="mt-4 inline-block text-[#2D7DFF] hover:underline"
+            >
+              ← Back to Templates
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0B0D0F] text-[#F5F3EE]">
       <header className="border-b border-white/10 px-6 py-4">
-        <div className="mx-auto flex max-w-6xl items-center gap-4">
+        <div className="mx-auto flex max-w-7xl items-center gap-4">
           <Link
             href="/admin/templates"
             className="text-[#A8A29E] transition-colors hover:text-[#F5F3EE]"
@@ -25,49 +146,95 @@ export default async function AdminTemplateEditorPage({ params }: PageProps) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 py-8">
-        <div className="grid gap-8 lg:grid-cols-2">
-          {/* Editor */}
-          <div className="space-y-4">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-[#A8A29E]">
-                Subject
-              </label>
-              <input
-                type="text"
-                placeholder="Email subject..."
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[#F5F3EE] placeholder-[#A8A29E]/50 focus:border-[#2D7DFF] focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="mb-1 block text-sm font-medium text-[#A8A29E]">
-                HTML Content
-              </label>
-              <div className="min-h-[300px] rounded-xl border border-white/10 bg-white/5 p-4">
-                <p className="text-[#A8A29E]">
-                  Rich text editor coming soon...
-                </p>
+      <main className="mx-auto max-w-7xl px-6 py-8">
+        <form onSubmit={form.handleSubmit(handleSave)}>
+          <div className="grid gap-8 lg:grid-cols-2">
+            {/* Left: Editor */}
+            <div className="space-y-4">
+              {/* Subject Input */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-[#A8A29E]">
+                  Subject *
+                </label>
+                <input
+                  type="text"
+                  placeholder="Email subject..."
+                  className={`w-full rounded-xl border ${
+                    form.formState.errors.subject
+                      ? "border-red-500"
+                      : "border-white/10"
+                  } bg-white/5 px-4 py-3 text-[#F5F3EE] placeholder-[#A8A29E]/50 focus:border-[#2D7DFF] focus:outline-none`}
+                  {...form.register("subject")}
+                />
+                {form.formState.errors.subject && (
+                  <p className="flex items-center gap-1 text-xs text-red-400">
+                    <AlertCircle size={12} />
+                    {form.formState.errors.subject.message}
+                  </p>
+                )}
               </div>
+
+              {/* TipTap Editor */}
+              <TemplateEditor
+                control={form.control}
+                name="html"
+                templateKey={templateKey}
+              />
+
+              {/* Save Button */}
+              <div className="flex items-center gap-3">
+                <button
+                  type="submit"
+                  disabled={updateMutation.isPending || !form.formState.isDirty}
+                  className="flex items-center gap-2 rounded-xl bg-[#2D7DFF] px-6 py-3 font-medium text-white transition-colors hover:bg-[#2D7DFF]/90 disabled:cursor-not-allowed disabled:opacity-50"
+                  title={
+                    !form.formState.isDirty
+                      ? "No changes to save"
+                      : updateMutation.isPending
+                        ? "Saving..."
+                        : "Save changes"
+                  }
+                >
+                  {updateMutation.isPending && (
+                    <Loader2 className="animate-spin" size={16} />
+                  )}
+                  {updateMutation.isPending ? "Saving..." : "Save Template"}
+                </button>
+
+                {successMessage && (
+                  <div className="flex items-center gap-2 text-sm text-green-400">
+                    <Check size={16} />
+                    {successMessage}
+                  </div>
+                )}
+              </div>
+
+              {/* Error Message */}
+              {updateMutation.isError && (
+                <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
+                  <div className="flex items-start gap-2">
+                    <AlertCircle size={16} className="mt-0.5 flex-shrink-0" />
+                    <div>
+                      <div className="font-medium">Failed to save template</div>
+                      <div className="mt-1 text-xs">
+                        {updateMutation.error instanceof Error
+                          ? updateMutation.error.message
+                          : "Please try again."}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div className="flex gap-2">
-              <button className="rounded-xl bg-[#2D7DFF] px-4 py-2 font-medium text-white transition-colors hover:bg-[#2D7DFF]/90">
-                Save Template
-              </button>
-            </div>
+            {/* Right: Preview */}
+            <TemplatePreview
+              subject={form.watch("subject")}
+              html={form.watch("html")}
+              templateKey={templateKey}
+            />
           </div>
-
-          {/* Preview */}
-          <div>
-            <h2 className="mb-2 text-sm font-medium text-[#A8A29E]">Preview</h2>
-            <div className="min-h-[400px] rounded-xl border border-white/10 bg-white p-6">
-              <p className="text-sm text-gray-400">
-                Preview will appear here...
-              </p>
-            </div>
-          </div>
-        </div>
+        </form>
       </main>
     </div>
   );
