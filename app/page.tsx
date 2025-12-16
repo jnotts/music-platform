@@ -97,7 +97,7 @@ export default function ArtistSubmissionPage() {
   const updateTrackMetadata = (
     uploadId: string,
     field: keyof TrackMetadata,
-    value: string
+    value: string,
   ) => {
     setTrackMetadata((prev) => ({
       ...prev,
@@ -111,7 +111,7 @@ export default function ArtistSubmissionPage() {
       if (!files || files.length === 0) return;
       fileUpload.addFiles(files);
     },
-    [fileUpload]
+    [fileUpload],
   );
 
   // Drag and drop handlers
@@ -134,7 +134,7 @@ export default function ArtistSubmissionPage() {
       setIsDragging(false);
       handleFileSelect(e.dataTransfer.files);
     },
-    [handleFileSelect]
+    [handleFileSelect],
   );
 
   // Form submission
@@ -180,7 +180,7 @@ export default function ArtistSubmissionPage() {
         onSuccess: (data) => {
           setSubmissionResult(data);
         },
-      }
+      },
     );
   };
 
@@ -200,19 +200,19 @@ export default function ArtistSubmissionPage() {
   // SUCCESS STATE
   if (submissionResult) {
     return (
-      <div className="min-h-screen font-sans flex items-center justify-center p-6 text-foreground dark:text-[#F5F3EE]">
-        <div className="text-center max-w-md">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-success/10 text-success mb-6">
+      <div className="flex min-h-screen items-center justify-center p-6 font-sans text-foreground dark:text-[#F5F3EE]">
+        <div className="max-w-md text-center">
+          <div className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-success/10 text-success">
             <Check size={40} />
           </div>
-          <h1 className="text-3xl font-bold mb-4">Submission Received!</h1>
-          <p className="text-muted mb-6">
+          <h1 className="mb-4 text-3xl font-bold">Submission Received!</h1>
+          <p className="mb-6 text-muted">
             Thank you for submitting your demo. Our A&R team will review your{" "}
             {submissionResult.tracks_count} track
             {submissionResult.tracks_count > 1 ? "s" : ""} and get back to you
             soon.
           </p>
-          <p className="text-sm text-muted/70 mb-8">
+          <p className="mb-8 text-sm text-muted/70">
             Submission ID:{" "}
             <span className="font-mono">
               {submissionResult.submission_id.slice(0, 8)}
@@ -235,7 +235,7 @@ export default function ArtistSubmissionPage() {
   }
 
   return (
-    <div className="min-h-screen font-sans transition-colors duration-500 text-foreground dark:text-[#F5F3EE]">
+    <div className="min-h-screen font-sans text-foreground transition-colors duration-500 dark:text-[#F5F3EE]">
       {/* Hidden file input */}
       <input
         ref={fileInputRef}
@@ -255,23 +255,23 @@ export default function ArtistSubmissionPage() {
         className={`mx-auto px-6 transition-all duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${
           hasTracks
             ? "max-w-[1400px] pt-12 pb-32"
-            : "max-w-4xl flex flex-col justify-center min-h-screen"
+            : "flex min-h-screen max-w-4xl flex-col justify-center"
         }`}
       >
         {/* Header */}
         <header
           className={`text-center transition-all duration-700 md:text-left ${
-            hasTracks ? "mb-10" : "mb-16 -mt-20"
+            hasTracks ? "mb-10" : "-mt-20 mb-16"
           }`}
         >
           <div
-            className={`inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary mb-6 mx-auto md:mx-0 transition-all ${
+            className={`mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary transition-all md:mx-0 ${
               hasTracks ? "opacity-100" : "scale-110"
             }`}
           >
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary/50 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/50 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
             </span>
             MELOTECH RECORDS
           </div>
@@ -285,7 +285,7 @@ export default function ArtistSubmissionPage() {
           </h1>
 
           <p
-            className={`mx-auto md:mx-0 mt-4 max-w-xl text-muted transition-all duration-700 ${
+            className={`mx-auto mt-4 max-w-xl text-muted transition-all duration-700 md:mx-0 ${
               hasTracks ? "text-lg" : "text-xl md:text-2xl"
             }`}
           >
@@ -302,10 +302,10 @@ export default function ArtistSubmissionPage() {
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            className={`group relative flex cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed transition-all duration-300 h-64 gap-6 ${
+            className={`group relative flex h-64 cursor-pointer flex-col items-center justify-center gap-6 rounded-3xl border-2 border-dashed transition-all duration-300 ${
               isDragging
-                ? "border-primary bg-primary/10 scale-[1.02]"
-                : "hover:scale-[1.01] hover:border-primary hover:bg-primary/5 bg-surface-muted border-border dark:bg-white/[0.02] dark:border-white/10"
+                ? "scale-[1.02] border-primary bg-primary/10"
+                : "border-border bg-surface-muted hover:scale-[1.01] hover:border-primary hover:bg-primary/5 dark:border-white/10 dark:bg-white/[0.02]"
             }`}
           >
             <div
@@ -317,7 +317,7 @@ export default function ArtistSubmissionPage() {
             >
               <Upload size={40} />
             </div>
-            <div className="text-center space-y-2">
+            <div className="space-y-2 text-center">
               <p className="text-xl font-medium">
                 {isDragging
                   ? "Drop your files here"
@@ -338,11 +338,11 @@ export default function ArtistSubmissionPage() {
           <form
             id="submission-form"
             onSubmit={form.handleSubmit(handleSubmit)}
-            className="grid gap-8 lg:grid-cols-12 animate-in fade-in slide-in-from-bottom-8 duration-700"
+            className="animate-in fade-in slide-in-from-bottom-8 grid gap-8 duration-700 lg:grid-cols-12"
           >
             {/* Left Column: Artist Profile */}
-            <div className="space-y-6 lg:col-span-4 lg:sticky lg:top-8 lg:h-fit">
-              <div className="glass backdrop-grayscale-0 p-6">
+            <div className="space-y-6 lg:sticky lg:top-8 lg:col-span-4 lg:h-fit">
+              <div className="glass p-6 backdrop-grayscale-0">
                 <h2 className="mb-6 text-lg font-semibold">Artist Profile</h2>
 
                 <div className="space-y-5">
@@ -405,7 +405,7 @@ export default function ArtistSubmissionPage() {
                     <button
                       type="button"
                       onClick={() => setShowSocialsManual(!showSocialsManual)}
-                      className="flex w-full items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted hover:text-foreground dark:hover:text-white transition-colors"
+                      className="flex w-full items-center justify-between text-xs font-semibold tracking-wider text-muted uppercase transition-colors hover:text-foreground dark:hover:text-white"
                     >
                       <span>
                         Social Profiles{" "}
@@ -422,7 +422,7 @@ export default function ArtistSubmissionPage() {
                     </button>
 
                     {showSocials && (
-                      <div className="mt-4 space-y-3 animate-in fade-in slide-in-from-top-2">
+                      <div className="animate-in fade-in slide-in-from-top-2 mt-4 space-y-3">
                         <div className="space-y-1">
                           <SocialInput
                             icon={<InstagramIcon />}
@@ -435,7 +435,7 @@ export default function ArtistSubmissionPage() {
                             {...form.register("instagram_url")}
                           />
                           {form.formState.errors.instagram_url && (
-                            <p className="text-xs text-error ml-1">
+                            <p className="ml-1 text-xs text-error">
                               {form.formState.errors.instagram_url.message}
                             </p>
                           )}
@@ -452,7 +452,7 @@ export default function ArtistSubmissionPage() {
                             {...form.register("spotify_url")}
                           />
                           {form.formState.errors.spotify_url && (
-                            <p className="text-xs text-error ml-1">
+                            <p className="ml-1 text-xs text-error">
                               {form.formState.errors.spotify_url.message}
                             </p>
                           )}
@@ -469,7 +469,7 @@ export default function ArtistSubmissionPage() {
                             {...form.register("soundcloud_url")}
                           />
                           {form.formState.errors.soundcloud_url && (
-                            <p className="text-xs text-error ml-1">
+                            <p className="ml-1 text-xs text-error">
                               {form.formState.errors.soundcloud_url.message}
                             </p>
                           )}
@@ -482,8 +482,8 @@ export default function ArtistSubmissionPage() {
 
               {/* Submit Error */}
               {submitMutation.error && (
-                <div className="p-4 rounded-lg bg-error/10 border border-error/30 text-error text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
-                  <AlertCircle size={18} className="shrink-0 mt-0.5" />
+                <div className="animate-in fade-in slide-in-from-top-2 flex items-start gap-3 rounded-lg border border-error/30 bg-error/10 p-4 text-sm text-error">
+                  <AlertCircle size={18} className="mt-0.5 shrink-0" />
                   <span>{submitMutation.error.message}</span>
                 </div>
               )}
@@ -498,7 +498,7 @@ export default function ArtistSubmissionPage() {
                     fileUpload.uploads.length === 0 ||
                     fileUpload.hasErrors
                   }
-                  className="btn-primary w-full disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="btn-primary flex w-full items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {submitMutation.isPending && (
                     <Loader2 className="animate-spin" size={16} />
@@ -506,8 +506,8 @@ export default function ArtistSubmissionPage() {
                   {submitMutation.isPending
                     ? "Submitting..."
                     : fileUpload.isUploading
-                    ? "Uploading..."
-                    : "Submit Demo"}
+                      ? "Uploading..."
+                      : "Submit Demo"}
                 </button>
               </div>
             </div>
@@ -517,13 +517,13 @@ export default function ArtistSubmissionPage() {
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-lg font-semibold">
                   Uploaded Tracks{" "}
-                  <span className="text-muted text-sm font-normal ml-2">
+                  <span className="ml-2 text-sm font-normal text-muted">
                     ({fileUpload.uploads.length}/
                     {UPLOAD_CONFIG.maxTracksPerSubmission})
                   </span>
                 </h2>
                 {fileUpload.isUploading && (
-                  <span className="text-xs tracking-wider uppercase text-primary">
+                  <span className="text-xs tracking-wider text-primary uppercase">
                     Uploading... {fileUpload.overallProgress}%
                   </span>
                 )}
@@ -551,14 +551,14 @@ export default function ArtistSubmissionPage() {
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
-                    className={`group min-h-[250px] flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed text-muted hover:text-primary transition-all p-4 ${
+                    className={`group flex min-h-[250px] cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed p-4 text-muted transition-all hover:text-primary ${
                       isDragging
                         ? "border-primary bg-primary/10"
                         : "border-border hover:border-primary/50 hover:bg-primary/5 dark:border-white/10"
                     }`}
                   >
                     <Plus size={28} />
-                    <span className="mt-3 text-xs font-semibold uppercase tracking-wider">
+                    <span className="mt-3 text-xs font-semibold tracking-wider uppercase">
                       Add Another
                     </span>
                     <span className="mt-1 text-[10px] opacity-70">
@@ -573,11 +573,11 @@ export default function ArtistSubmissionPage() {
       </div>
 
       {/* Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 glass border-0 hidden lg:block">
+      <footer className="glass fixed right-0 bottom-0 left-0 hidden border-0 lg:block">
         <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-4">
           <Link
             href="/admin/login"
-            className="text-xs font-medium transition-colors text-muted hover:text-foreground dark:hover:text-white"
+            className="text-xs font-medium text-muted transition-colors hover:text-foreground dark:hover:text-white"
           >
             Admin Access
           </Link>
@@ -591,14 +591,14 @@ export default function ArtistSubmissionPage() {
                 fileUpload.uploads.length === 0 ||
                 fileUpload.hasErrors
               }
-              className="btn-primary disabled:opacity-50 flex items-center gap-2"
+              className="btn-primary flex items-center gap-2 disabled:opacity-50"
             >
               {submitMutation.isPending && <Loader2 className="animate-spin" />}
               {submitMutation.isPending
                 ? "Submitting..."
                 : fileUpload.isUploading
-                ? "Uploading..."
-                : "Submit Demo"}
+                  ? "Uploading..."
+                  : "Submit Demo"}
             </button>
           ) : (
             <div />

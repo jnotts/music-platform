@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
         artist:artists(*),
         tracks(*),
         review:reviews(*)
-      `
+      `,
       )
       .order("created_at", { ascending: false });
 

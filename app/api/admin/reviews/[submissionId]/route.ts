@@ -59,7 +59,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         },
         {
           onConflict: "submission_id",
-        }
+        },
       )
       .select()
       .single();

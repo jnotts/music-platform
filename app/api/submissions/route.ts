@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
         artist_id: artistData.id,
         tracks_count: tracksData.length,
       },
-      201
+      201,
     );
   } catch (err) {
     console.error("Error in POST /api/submissions:", err);

@@ -43,9 +43,9 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0D0F] text-[#F5F3EE] flex items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center bg-[#0B0D0F] text-[#F5F3EE]">
       <main className="w-full max-w-sm px-6">
-        <div className="text-center mb-8">
+        <div className="mb-8 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">Admin Login</h1>
           <p className="mt-2 text-sm text-[#A8A29E]">
             Sign in to manage submissions
@@ -56,7 +56,7 @@ export default function AdminLoginPage() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-[#A8A29E] mb-1"
+              className="mb-1 block text-sm font-medium text-[#A8A29E]"
             >
               Email
             </label>
@@ -66,7 +66,7 @@ export default function AdminLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-[#F5F3EE] placeholder-[#A8A29E]/50 focus:border-[#2D7DFF] focus:outline-none focus:ring-1 focus:ring-[#2D7DFF]"
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[#F5F3EE] placeholder-[#A8A29E]/50 focus:border-[#2D7DFF] focus:ring-1 focus:ring-[#2D7DFF] focus:outline-none"
               placeholder="admin@yourlabel.com"
             />
           </div>
@@ -74,7 +74,7 @@ export default function AdminLoginPage() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-[#A8A29E] mb-1"
+              className="mb-1 block text-sm font-medium text-[#A8A29E]"
             >
               Password
             </label>
@@ -84,7 +84,7 @@ export default function AdminLoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-[#F5F3EE] placeholder-[#A8A29E]/50 focus:border-[#2D7DFF] focus:outline-none focus:ring-1 focus:ring-[#2D7DFF]"
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[#F5F3EE] placeholder-[#A8A29E]/50 focus:border-[#2D7DFF] focus:ring-1 focus:ring-[#2D7DFF] focus:outline-none"
               placeholder="••••••••"
             />
           </div>
@@ -94,7 +94,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-[#2D7DFF] px-4 py-3 font-medium text-white hover:bg-[#2D7DFF]/90 disabled:opacity-50 transition-colors"
+            className="w-full rounded-xl bg-[#2D7DFF] px-4 py-3 font-medium text-white transition-colors hover:bg-[#2D7DFF]/90 disabled:opacity-50"
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>
@@ -103,7 +103,7 @@ export default function AdminLoginPage() {
         <div className="mt-8 text-center">
           <Link
             href="/"
-            className="text-sm text-[#A8A29E] hover:text-[#F5F3EE] transition-colors"
+            className="text-sm text-[#A8A29E] transition-colors hover:text-[#F5F3EE]"
           >
             ← Back to submissions
           </Link>

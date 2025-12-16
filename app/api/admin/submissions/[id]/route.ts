@@ -35,7 +35,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         artist:artists(*),
         tracks(*),
         review:reviews(*)
-      `
+      `,
       )
       .eq("id", id)
       .single();

@@ -38,10 +38,10 @@ export function useFileUpload(): UseFileUploadReturn {
   const updateUpload = useCallback(
     (id: string, updates: Partial<FileUploadState>) => {
       setUploads((prev) =>
-        prev.map((u) => (u.id === id ? { ...u, ...updates } : u))
+        prev.map((u) => (u.id === id ? { ...u, ...updates } : u)),
       );
     },
-    []
+    [],
   );
 
   const uploadWithProgress = useCallback(
@@ -50,7 +50,7 @@ export function useFileUpload(): UseFileUploadReturn {
       file: File,
       signedUrl: string,
       storagePath: string,
-      signal: AbortSignal
+      signal: AbortSignal,
     ): Promise<void> => {
       return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
@@ -102,10 +102,10 @@ export function useFileUpload(): UseFileUploadReturn {
         });
 
         xhr.addEventListener("error", () =>
-          reject(new Error("Network error during upload"))
+          reject(new Error("Network error during upload")),
         );
         xhr.addEventListener("abort", () =>
-          reject(new Error("Upload cancelled"))
+          reject(new Error("Upload cancelled")),
         );
 
         signal.addEventListener("abort", () => xhr.abort());
@@ -113,12 +113,12 @@ export function useFileUpload(): UseFileUploadReturn {
         xhr.open("PUT", signedUrl);
         xhr.setRequestHeader(
           "Content-Type",
-          file.type || "application/octet-stream"
+          file.type || "application/octet-stream",
         );
         xhr.send(file);
       });
     },
-    [updateUpload]
+    [updateUpload],
   );
 
   const startUpload = useCallback(
@@ -145,7 +145,7 @@ export function useFileUpload(): UseFileUploadReturn {
         if (!signResponse.ok) {
           const errorData = await signResponse.json().catch(() => ({}));
           throw new Error(
-            errorData.error?.message || "Failed to get upload URL"
+            errorData.error?.message || "Failed to get upload URL",
           );
         }
 
@@ -162,7 +162,7 @@ export function useFileUpload(): UseFileUploadReturn {
           file,
           signedUrl,
           storagePath,
-          controller.signal
+          controller.signal,
         );
       } catch (err) {
         if (err instanceof Error && err.name === "AbortError") {
@@ -178,7 +178,7 @@ export function useFileUpload(): UseFileUploadReturn {
         uploadSpeeds.current.delete(id);
       }
     },
-    [updateUpload, uploadWithProgress]
+    [updateUpload, uploadWithProgress],
   );
 
   const addFiles = useCallback(
@@ -190,7 +190,7 @@ export function useFileUpload(): UseFileUploadReturn {
 
       if (availableSlots <= 0) {
         console.warn(
-          `Maximum ${UPLOAD_CONFIG.maxTracksPerSubmission} tracks allowed`
+          `Maximum ${UPLOAD_CONFIG.maxTracksPerSubmission} tracks allowed`,
         );
         return;
       }
@@ -221,7 +221,7 @@ export function useFileUpload(): UseFileUploadReturn {
         }
       });
     },
-    [uploads.length, startUpload]
+    [uploads.length, startUpload],
   );
 
   const removeUpload = useCallback(
@@ -250,7 +250,7 @@ export function useFileUpload(): UseFileUploadReturn {
 
       setUploads((prev) => prev.filter((u) => u.id !== id));
     },
-    [uploads]
+    [uploads],
   );
 
   const retryUpload = useCallback(
@@ -266,7 +266,7 @@ export function useFileUpload(): UseFileUploadReturn {
         }
       }
     },
-    [uploads, startUpload, updateUpload]
+    [uploads, startUpload, updateUpload],
   );
 
   const clearAll = useCallback(() => {
@@ -298,7 +298,7 @@ export function useFileUpload(): UseFileUploadReturn {
   const overallProgress =
     uploads.length > 0
       ? Math.round(
-          uploads.reduce((sum, u) => sum + u.progress, 0) / uploads.length
+          uploads.reduce((sum, u) => sum + u.progress, 0) / uploads.length,
         )
       : 0;
 

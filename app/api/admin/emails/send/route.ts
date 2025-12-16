@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
         status,
         artist:artists(name, email),
         review:reviews(feedback_for_artist)
-      `
+      `,
       )
       .eq("id", submissionId)
       .single();
@@ -155,7 +155,7 @@ export async function GET(req: NextRequest) {
         artist:artists(name, email),
         tracks(title, filename),
         review:reviews(feedback_for_artist)
-      `
+      `,
       )
       .eq("id", validatedId)
       .single();
@@ -198,9 +198,9 @@ export async function GET(req: NextRequest) {
       emailType === "confirmation"
         ? "confirmation"
         : emailType === "approval"
-        ? "approved"
-        : "rejected",
-      variables
+          ? "approved"
+          : "rejected",
+      variables,
     );
 
     return ok({

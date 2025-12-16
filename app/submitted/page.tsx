@@ -37,7 +37,7 @@ export default function SubmittedPage() {
 
         <Link
           href="/"
-          className="mt-8 inline-block rounded-xl bg-white/10 px-6 py-3 text-sm font-medium hover:bg-white/20 transition-colors"
+          className="mt-8 inline-block rounded-xl bg-white/10 px-6 py-3 text-sm font-medium transition-colors hover:bg-white/20"
         >
           Submit Another Demo
         </Link>

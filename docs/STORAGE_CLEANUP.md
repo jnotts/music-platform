@@ -10,6 +10,7 @@ Files are automatically deleted from storage when:
 ## Remaining Issue ⚠️
 
 **Orphaned files still occur when:**
+
 - User closes browser/tab before submitting (abandons submission)
 - Browser crashes during upload flow
 - User navigates away without removing files
@@ -23,6 +24,7 @@ These files remain in storage indefinitely since they're never referenced in the
 ### Implementation Options
 
 #### Option 1: Supabase Edge Function (Recommended)
+
 Create a scheduled Edge Function that runs daily:
 
 ```sql
@@ -34,21 +36,26 @@ WHERE created_at < NOW() - INTERVAL '24 hours';
 ```
 
 **Pros:**
+
 - Native to Supabase
 - No external infrastructure
 - Built-in cron scheduling
 
 **Cons:**
+
 - Need to enable Edge Functions
 
 #### Option 2: Next.js API Route + External Cron
+
 Create `/api/admin/cleanup-storage` and call via external cron (e.g., Vercel Cron, GitHub Actions)
 
 **Pros:**
+
 - Simple to implement
 - Uses existing tech stack
 
 **Cons:**
+
 - Requires external scheduler
 - API route must be protected
 
@@ -85,10 +92,11 @@ export async function POST(request: NextRequest) {
   const dbPaths = new Set(tracks?.map((t) => t.storage_path) || []);
 
   // 4. Find orphaned files (in storage but not in DB)
-  const orphaned = files?.filter((file) => {
-    const fullPath = `submissions/${file.name}`;
-    return !dbPaths.has(fullPath);
-  }) || [];
+  const orphaned =
+    files?.filter((file) => {
+      const fullPath = `submissions/${file.name}`;
+      return !dbPaths.has(fullPath);
+    }) || [];
 
   // 5. Delete orphaned files older than 24 hours
   const cutoff = Date.now() - 24 * 60 * 60 * 1000;
@@ -109,10 +117,12 @@ export async function POST(request: NextRequest) {
 ```json
 // vercel.json
 {
-  "crons": [{
-    "path": "/api/admin/cleanup-storage",
-    "schedule": "0 2 * * *"
-  }]
+  "crons": [
+    {
+      "path": "/api/admin/cleanup-storage",
+      "schedule": "0 2 * * *"
+    }
+  ]
 }
 ```
 
@@ -136,10 +146,12 @@ CRON_SECRET=your-secret-token-here
 ## Cost Estimate
 
 Without cleanup:
+
 - ~10 abandoned submissions/day × 3 files × 20MB = 600MB/day
 - 18GB/month in orphaned files
 
 With cleanup:
+
 - Maximum 24 hours of orphaned files
 - ~600MB max at any time
 

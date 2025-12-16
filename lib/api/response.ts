@@ -33,14 +33,14 @@ export function error(
   code: string,
   message: string,
   status = 400,
-  details?: unknown
+  details?: unknown,
 ): NextResponse<ApiError> {
   return NextResponse.json(
     {
       ok: false,
       error: { code, message, ...(details !== undefined && { details }) },
     },
-    { status }
+    { status },
   );
 }
 

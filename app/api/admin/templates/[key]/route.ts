@@ -29,7 +29,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   // Validate key
   if (!VALID_KEYS.includes(key as EmailTemplateKey)) {
     return errors.badRequest(
-      `Invalid template key. Must be one of: ${VALID_KEYS.join(", ")}`
+      `Invalid template key. Must be one of: ${VALID_KEYS.join(", ")}`,
     );
   }
 
@@ -76,7 +76,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   // Validate key
   if (!VALID_KEYS.includes(key as EmailTemplateKey)) {
     return errors.badRequest(
-      `Invalid template key. Must be one of: ${VALID_KEYS.join(", ")}`
+      `Invalid template key. Must be one of: ${VALID_KEYS.join(", ")}`,
     );
   }
 
@@ -104,7 +104,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         },
         {
           onConflict: "key",
-        }
+        },
       )
       .select()
       .single();

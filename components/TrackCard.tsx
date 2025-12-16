@@ -38,7 +38,7 @@ export function TrackCard({
             <Music className="text-muted" size={20} />
           </div>
           <div className="min-w-0">
-            <div className="text-xs font-medium truncate">
+            <div className="truncate text-xs font-medium">
               {upload.file.name}
             </div>
             <div className="text-[10px] text-muted">
@@ -49,7 +49,7 @@ export function TrackCard({
         <button
           type="button"
           onClick={onRemove}
-          className="text-muted hover:text-error transition-colors"
+          className="text-muted transition-colors hover:text-error"
         >
           <X size={16} />
         </button>
@@ -63,10 +63,10 @@ export function TrackCard({
               isUploading
                 ? "text-primary"
                 : isComplete
-                ? "text-success"
-                : isError
-                ? "text-error"
-                : "text-muted"
+                  ? "text-success"
+                  : isError
+                    ? "text-error"
+                    : "text-muted"
             }
           >
             {isUploading
@@ -74,10 +74,10 @@ export function TrackCard({
                   upload.eta ? ` (${formatEta(upload.eta)} left)` : ""
                 }`
               : isComplete
-              ? "Ready"
-              : isError
-              ? upload.error || "Error"
-              : "Waiting..."}
+                ? "Ready"
+                : isError
+                  ? upload.error || "Error"
+                  : "Waiting..."}
           </span>
           {(isUploading || isComplete) && (
             <span className="text-muted">{upload.progress}%</span>
@@ -113,7 +113,7 @@ export function TrackCard({
             value={metadata?.title || ""}
             onChange={(e) => onMetadataChange("title", e.target.value)}
             placeholder="Track Title"
-            className="w-full bg-transparent py-1 text-sm font-medium outline-none border-b border-border focus:border-primary transition-colors placeholder:text-muted/30"
+            className="w-full border-b border-border bg-transparent py-1 text-sm font-medium transition-colors outline-none placeholder:text-muted/30 focus:border-primary"
           />
         </div>
         <div className="grid grid-cols-5 gap-2">
@@ -124,7 +124,7 @@ export function TrackCard({
               value={metadata?.genre || ""}
               onChange={(e) => onMetadataChange("genre", e.target.value)}
               placeholder="Genre"
-              className="w-full bg-transparent py-1 text-sm outline-none border-b border-border focus:border-primary transition-colors placeholder:text-muted/30"
+              className="w-full border-b border-border bg-transparent py-1 text-sm transition-colors outline-none placeholder:text-muted/30 focus:border-primary"
             />
           </div>
           <div className="col-span-1 space-y-1">
@@ -134,7 +134,7 @@ export function TrackCard({
               value={metadata?.bpm || ""}
               onChange={(e) => onMetadataChange("bpm", e.target.value)}
               placeholder="-"
-              className="w-full bg-transparent py-1 text-sm outline-none border-b border-border focus:border-primary transition-colors placeholder:text-muted/30 text-center"
+              className="w-full border-b border-border bg-transparent py-1 text-center text-sm transition-colors outline-none placeholder:text-muted/30 focus:border-primary"
             />
           </div>
           <div className="col-span-1 space-y-1">
@@ -144,7 +144,7 @@ export function TrackCard({
               value={metadata?.key || ""}
               onChange={(e) => onMetadataChange("key", e.target.value)}
               placeholder="-"
-              className="w-full bg-transparent py-1 text-sm outline-none border-b border-border focus:border-primary transition-colors placeholder:text-muted/30 text-center"
+              className="w-full border-b border-border bg-transparent py-1 text-center text-sm transition-colors outline-none placeholder:text-muted/30 focus:border-primary"
             />
           </div>
         </div>

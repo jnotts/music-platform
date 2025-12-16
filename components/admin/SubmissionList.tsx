@@ -41,18 +41,18 @@ export function SubmissionList({
 
   return (
     <div
-      className={`flex flex-col h-full transition-all duration-300 ${
+      className={`flex h-full flex-col transition-all duration-300 ${
         selectedId ? "w-80" : "w-full"
-      } rounded-l-2xl overflow-hidden`}
+      } overflow-hidden rounded-l-2xl`}
     >
       {/* Header / Search */}
-      <div className="p-4 border-b border-border space-y-3">
+      <div className="space-y-3 border-b border-border p-4">
         <div className="flex items-center justify-between">
-          <h2 className="font-semibold text-lg px-1">Submissions</h2>
+          <h2 className="px-1 text-lg font-semibold">Submissions</h2>
           {selectedId && (
             <button
               onClick={() => setSelectedId(null)}
-              className="underline text-muted/60 text-xs cursor-pointer"
+              className="cursor-pointer text-xs text-muted/60 underline"
             >
               Overview
             </button>
@@ -61,21 +61,21 @@ export function SubmissionList({
 
         <div className="relative">
           <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted"
+            className="absolute top-1/2 left-3 -translate-y-1/2 text-muted"
             size={16}
           />
           <input
             type="text"
             placeholder="Search..."
-            className="w-full bg-surface-muted border border-border rounded-lg pl-9 pr-3 py-2 text-sm focus:border-primary outline-none transition-colors"
+            className="w-full rounded-lg border border-border bg-surface-muted py-2 pr-3 pl-9 text-sm transition-colors outline-none focus:border-primary"
           />
         </div>
         <div className="flex gap-2">
-          <button className="flex-1 flex cursor-pointer items-center justify-center gap-2 text-xs font-medium bg-surface-muted hover:bg-white/10 border border-border rounded-lg py-1.5 transition-colors">
+          <button className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg border border-border bg-surface-muted py-1.5 text-xs font-medium transition-colors hover:bg-white/10">
             <Filter size={12} />
             Filter
           </button>
-          <select className="flex-1 bg-surface-muted hover:bg-white/10 border border-border rounded-lg py-1.5 text-xs font-medium outline-none px-2 appearance-none text-center cursor-pointer">
+          <select className="flex-1 cursor-pointer appearance-none rounded-lg border border-border bg-surface-muted px-2 py-1.5 text-center text-xs font-medium outline-none hover:bg-white/10">
             <option>Newest</option>
             <option>Oldest</option>
           </select>
@@ -83,36 +83,36 @@ export function SubmissionList({
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto p-2 space-y-1">
+      <div className="flex-1 space-y-1 overflow-y-auto p-2">
         {submissions.map((sub) => (
           <button
             key={sub.id}
             onClick={() => setSelectedId(sub.id)}
-            className={`w-full text-left p-3 cursor-pointer rounded-xl transition-all ${
+            className={`w-full cursor-pointer rounded-xl p-3 text-left transition-all ${
               selectedId === sub.id
-                ? "bg-primary/20 border-primary/30"
-                : "hover:bg-white/40 border-transparent"
-            } border group`}
+                ? "border-primary/30 bg-primary/20"
+                : "border-transparent hover:bg-white/40"
+            } group border`}
           >
-            <div className="flex justify-between items-start mb-1">
-              <span className="font-medium truncate pr-2">
+            <div className="mb-1 flex items-start justify-between">
+              <span className="truncate pr-2 font-medium">
                 {sub.artist.name}
               </span>
               <span
-                className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium uppercase tracking-wider ${
+                className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium tracking-wider uppercase ${
                   sub.status === "pending"
                     ? "bg-yellow-500/20 text-yellow-200"
                     : sub.status === "in_review"
-                    ? "bg-blue-500/20 text-blue-200"
-                    : sub.status === "approved"
-                    ? "bg-green-500/20 text-green-200"
-                    : "bg-red-500/20 text-red-200"
+                      ? "bg-blue-500/20 text-blue-200"
+                      : sub.status === "approved"
+                        ? "bg-green-500/20 text-green-200"
+                        : "bg-red-500/20 text-red-200"
                 }`}
               >
                 {sub.status.replace("_", " ")}
               </span>
             </div>
-            <div className="text-xs text-muted truncate mb-2">
+            <div className="mb-2 truncate text-xs text-muted">
               {sub.tracks.length} track{sub.tracks.length !== 1 && "s"} •{" "}
               {sub.tracks.map((t) => t.title).join(", ")}
             </div>

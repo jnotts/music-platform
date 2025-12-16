@@ -11,7 +11,10 @@ export const signUploadSchema = z.object({
     .number()
     .int()
     .positive("File size must be positive")
-    .max(UPLOAD_CONFIG.maxFileSizeBytes, `File size must be less than ${UPLOAD_CONFIG.maxFileSizeMB}MB`),
+    .max(
+      UPLOAD_CONFIG.maxFileSizeBytes,
+      `File size must be less than ${UPLOAD_CONFIG.maxFileSizeMB}MB`,
+    ),
 });
 
 export type SignUploadInput = z.infer<typeof signUploadSchema>;

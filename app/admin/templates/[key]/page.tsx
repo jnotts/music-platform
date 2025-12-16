@@ -17,7 +17,7 @@ export default async function AdminTemplateEditorPage({ params }: PageProps) {
         <div className="mx-auto flex max-w-6xl items-center gap-4">
           <Link
             href="/admin/templates"
-            className="text-[#A8A29E] hover:text-[#F5F3EE] transition-colors"
+            className="text-[#A8A29E] transition-colors hover:text-[#F5F3EE]"
           >
             ← Templates
           </Link>
@@ -30,21 +30,21 @@ export default async function AdminTemplateEditorPage({ params }: PageProps) {
           {/* Editor */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[#A8A29E] mb-1">
+              <label className="mb-1 block text-sm font-medium text-[#A8A29E]">
                 Subject
               </label>
               <input
                 type="text"
                 placeholder="Email subject..."
-                className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-[#F5F3EE] placeholder-[#A8A29E]/50 focus:border-[#2D7DFF] focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[#F5F3EE] placeholder-[#A8A29E]/50 focus:border-[#2D7DFF] focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#A8A29E] mb-1">
+              <label className="mb-1 block text-sm font-medium text-[#A8A29E]">
                 HTML Content
               </label>
-              <div className="rounded-xl border border-white/10 bg-white/5 p-4 min-h-[300px]">
+              <div className="min-h-[300px] rounded-xl border border-white/10 bg-white/5 p-4">
                 <p className="text-[#A8A29E]">
                   Rich text editor coming soon...
                 </p>
@@ -52,7 +52,7 @@ export default async function AdminTemplateEditorPage({ params }: PageProps) {
             </div>
 
             <div className="flex gap-2">
-              <button className="rounded-xl bg-[#2D7DFF] px-4 py-2 font-medium text-white hover:bg-[#2D7DFF]/90 transition-colors">
+              <button className="rounded-xl bg-[#2D7DFF] px-4 py-2 font-medium text-white transition-colors hover:bg-[#2D7DFF]/90">
                 Save Template
               </button>
             </div>
@@ -60,9 +60,9 @@ export default async function AdminTemplateEditorPage({ params }: PageProps) {
 
           {/* Preview */}
           <div>
-            <h2 className="text-sm font-medium text-[#A8A29E] mb-2">Preview</h2>
-            <div className="rounded-xl border border-white/10 bg-white p-6 min-h-[400px]">
-              <p className="text-gray-400 text-sm">
+            <h2 className="mb-2 text-sm font-medium text-[#A8A29E]">Preview</h2>
+            <div className="min-h-[400px] rounded-xl border border-white/10 bg-white p-6">
+              <p className="text-sm text-gray-400">
                 Preview will appear here...
               </p>
             </div>

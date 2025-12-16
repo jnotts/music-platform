@@ -17,7 +17,7 @@ export default async function AdminSubmissionDetailPage({ params }: PageProps) {
         <div className="mx-auto flex max-w-6xl items-center gap-4">
           <Link
             href="/admin/submissions"
-            className="text-[#A8A29E] hover:text-[#F5F3EE] transition-colors"
+            className="text-[#A8A29E] transition-colors hover:text-[#F5F3EE]"
           >
             ← Back
           </Link>
@@ -28,11 +28,11 @@ export default async function AdminSubmissionDetailPage({ params }: PageProps) {
       <main className="mx-auto max-w-6xl px-6 py-8">
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Main content - tracks */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6 lg:col-span-2">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-              <h2 className="text-lg font-semibold mb-4">Tracks</h2>
+              <h2 className="mb-4 text-lg font-semibold">Tracks</h2>
               <p className="text-[#A8A29E]">Track player coming soon...</p>
-              <p className="text-xs text-[#A8A29E]/50 mt-2">
+              <p className="mt-2 text-xs text-[#A8A29E]/50">
                 Submission ID: {id}
               </p>
             </div>
@@ -42,13 +42,13 @@ export default async function AdminSubmissionDetailPage({ params }: PageProps) {
           <div className="space-y-6">
             {/* Artist info */}
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-              <h2 className="text-lg font-semibold mb-4">Artist</h2>
+              <h2 className="mb-4 text-lg font-semibold">Artist</h2>
               <p className="text-[#A8A29E]">Artist info coming soon...</p>
             </div>
 
             {/* Review panel */}
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-              <h2 className="text-lg font-semibold mb-4">Review</h2>
+              <h2 className="mb-4 text-lg font-semibold">Review</h2>
               <p className="text-[#A8A29E]">Review controls coming soon...</p>
             </div>
           </div>

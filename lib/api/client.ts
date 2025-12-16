@@ -14,7 +14,7 @@ export interface SubmitDemoResponse {
  * Submit a new demo with artist info and tracks
  */
 export async function submitDemo(
-  payload: CreateSubmissionInput
+  payload: CreateSubmissionInput,
 ): Promise<SubmitDemoResponse> {
   const response = await fetch("/api/submissions", {
     method: "POST",
@@ -59,7 +59,7 @@ import { ReviewInput } from "@/lib/schemas/review";
  */
 export async function updateSubmissionStatus(
   id: string,
-  status: SubmissionStatus
+  status: SubmissionStatus,
 ): Promise<void> {
   const response = await fetch(`/api/admin/submissions/${id}`, {
     method: "PATCH",
@@ -79,7 +79,7 @@ export async function updateSubmissionStatus(
  */
 export async function saveReview(
   submissionId: string,
-  data: ReviewInput
+  data: ReviewInput,
 ): Promise<void> {
   const response = await fetch(`/api/admin/reviews/${submissionId}`, {
     method: "PUT",

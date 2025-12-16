@@ -11,7 +11,7 @@ export default function AdminTemplatesPage() {
         <div className="mx-auto flex max-w-6xl items-center gap-4">
           <Link
             href="/admin/submissions"
-            className="text-[#A8A29E] hover:text-[#F5F3EE] transition-colors"
+            className="text-[#A8A29E] transition-colors hover:text-[#F5F3EE]"
           >
             ← Submissions
           </Link>
@@ -26,7 +26,7 @@ export default function AdminTemplatesPage() {
             <Link
               key={key}
               href={`/admin/templates/${key}`}
-              className="rounded-2xl border border-white/10 bg-white/5 p-6 hover:border-white/20 transition-colors"
+              className="rounded-2xl border border-white/10 bg-white/5 p-6 transition-colors hover:border-white/20"
             >
               <h2 className="text-lg font-semibold capitalize">{key}</h2>
               <p className="mt-2 text-sm text-[#A8A29E]">

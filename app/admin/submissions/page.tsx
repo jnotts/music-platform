@@ -19,9 +19,9 @@ export default function AdminSubmissionsPage() {
   const selectedSubmission = submissions?.find((s) => s.id === selectedId);
 
   return (
-    <div className="min-h-screen h-screen flex flex-col overflow-hidden relative transition-colors duration-300">
+    <div className="relative flex h-screen min-h-screen flex-col overflow-hidden transition-colors duration-300">
       {/* Header */}
-      <header className="shrink-0 h-16 border-b border-border bg-surface/50 backdrop-blur-md flex items-center justify-between px-6 z-10">
+      <header className="z-10 flex h-16 shrink-0 items-center justify-between border-b border-border bg-surface/50 px-6 backdrop-blur-md">
         <div className="flex items-center gap-4">
           {/* <Link
             href="/"
@@ -29,19 +29,19 @@ export default function AdminSubmissionsPage() {
           >
             <ArrowLeft size={20} />
           </Link> */}
-          <div className="h-6 w-px bg-border mx-2" />
+          <div className="mx-2 h-6 w-px bg-border" />
           <div className="flex items-center gap-2">
             <Layout size={18} className="text-primary" />
             <h1 className="font-semibold tracking-tight">Submission Manager</h1>
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <div className="text-xs font-mono text-muted bg-surface-muted px-2 py-1 rounded border border-border">
+          <div className="rounded border border-border bg-surface-muted px-2 py-1 font-mono text-xs text-muted">
             PROTOTYPE MODE
           </div>
           <Link
             href="/admin/templates"
-            className="text-sm font-medium text-muted hover:text-foreground transition-colors"
+            className="text-sm font-medium text-muted transition-colors hover:text-foreground"
           >
             Email Templates
           </Link>
@@ -50,21 +50,21 @@ export default function AdminSubmissionsPage() {
       </header>
 
       {/* Main Layout Area */}
-      <main className="flex-1 flex overflow-hidden p-6 gap-6 relative z-10">
+      <main className="relative z-10 flex flex-1 gap-6 overflow-hidden p-6">
         {isLoading ? (
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex flex-1 items-center justify-center">
             <Loader2 className="animate-spin text-primary" size={40} />
           </div>
         ) : (
           <>
             {/* Left Panel: Submission List */}
             <div
-              className={`transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] flex shrink-0 ${
-                selectedId ? "w-80" : "w-full max-w-2xl mx-auto"
+              className={`flex shrink-0 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+                selectedId ? "w-80" : "mx-auto w-full max-w-2xl"
               }`}
             >
               <div
-                className={`flex flex-col w-full h-full rounded-2xl glass shadow-2xl overflow-hidden`}
+                className={`glass flex h-full w-full flex-col overflow-hidden rounded-2xl shadow-2xl`}
               >
                 <SubmissionList
                   submissions={submissions || []}
@@ -78,13 +78,13 @@ export default function AdminSubmissionsPage() {
             {selectedId && selectedSubmission && (
               <>
                 {/* Center: Details */}
-                <div className="flex-1 min-w-0 glass rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 duration-300 slide-in-from-right-10">
+                <div className="glass animate-in fade-in zoom-in-95 slide-in-from-right-10 min-w-0 flex-1 rounded-2xl shadow-2xl duration-300">
                   <SubmissionDetail submission={selectedSubmission} />
                 </div>
 
                 {/* Right: Actions */}
-                <div className="shrink-0 animate-in fade-in slide-in-from-right-20 duration-500 delay-100">
-                  <div className="h-full rounded-2xl overflow-hidden glass shadow-2xl">
+                <div className="animate-in fade-in slide-in-from-right-20 shrink-0 delay-100 duration-500">
+                  <div className="glass h-full overflow-hidden rounded-2xl shadow-2xl">
                     <ActionPanel
                       key={selectedSubmission.id}
                       submission={selectedSubmission}

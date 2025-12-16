@@ -19,13 +19,18 @@ export async function DELETE(request: NextRequest) {
     const adminClient = createAdminClient();
 
     // Delete from storage
-    const { error } = await adminClient.storage.from("tracks").remove([storagePath]);
+    const { error } = await adminClient.storage
+      .from("tracks")
+      .remove([storagePath]);
 
     if (error) {
       console.error("Error deleting file from storage:", error);
       // Don't fail the request if file doesn't exist (might have already been deleted)
       if (error.message?.includes("not found")) {
-        return ok({ deleted: false, message: "File not found (may have already been deleted)" });
+        return ok({
+          deleted: false,
+          message: "File not found (may have already been deleted)",
+        });
       }
       return errors.internal("Failed to delete file from storage");
     }

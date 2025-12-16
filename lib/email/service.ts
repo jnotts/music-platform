@@ -20,7 +20,7 @@ function replaceVariables(template: string, variables: EmailVariables): string {
 
   for (const [key, value] of Object.entries(variables)) {
     if (value !== undefined && value !== null) {
-      const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
+      const regex = new RegExp(`\\{\\{${key}\\}\\}`, "g");
       result = result.replace(regex, String(value));
     }
   }
@@ -53,7 +53,7 @@ async function getTemplate(key: "confirmation" | "approved" | "rejected") {
 export async function sendTemplatedEmail(
   templateKey: "confirmation" | "approved" | "rejected",
   to: string,
-  variables: EmailVariables
+  variables: EmailVariables,
 ): Promise<{ success: boolean; messageId?: string; error?: string }> {
   try {
     const resend = createResendClient();
@@ -141,7 +141,7 @@ export async function sendRejectionEmail(payload: {
  */
 export async function previewEmail(
   templateKey: "confirmation" | "approved" | "rejected",
-  variables: EmailVariables
+  variables: EmailVariables,
 ): Promise<{ subject: string; html: string }> {
   const template = await getTemplate(templateKey);
 

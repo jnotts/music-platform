@@ -120,11 +120,11 @@ export function ActionPanel({ submission }: ActionPanelProps) {
   const isPending = isUpdatingStatus || isSavingReview;
 
   return (
-    <div className="w-full h-full border-l border-border flex flex-col overflow-y-auto">
+    <div className="flex h-full w-full flex-col overflow-y-auto border-l border-border">
       {/* Header */}
-      <div className="p-4 border-b border-border bg-surface/30 backdrop-blur-md sticky top-0 z-10 space-y-4">
+      <div className="sticky top-0 z-10 space-y-4 border-b border-border bg-surface/30 p-4 backdrop-blur-md">
         <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-sm uppercase tracking-wider text-muted">
+          <h3 className="text-sm font-semibold tracking-wider text-muted uppercase">
             Review
           </h3>
           {/* Status Transition Button - Immediate Action */}
@@ -134,7 +134,7 @@ export function ActionPanel({ submission }: ActionPanelProps) {
               type="button"
               onClick={handleStatusToggle}
               disabled={isPending}
-              className="text-xs cursor-pointer flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 text-muted hover:text-foreground transition-colors border border-white/5 disabled:opacity-50"
+              className="flex cursor-pointer items-center gap-1.5 rounded-md border border-white/5 bg-white/5 px-2 py-1 text-xs text-muted transition-colors hover:bg-white/10 hover:text-foreground disabled:opacity-50"
             >
               {isUpdatingStatus ? (
                 <Loader2 size={12} className="animate-spin" />
@@ -153,10 +153,10 @@ export function ActionPanel({ submission }: ActionPanelProps) {
           <button
             onClick={() => handleAction("approved")}
             disabled={isPending}
-            className={`flex-1 rounded-lg p-2 flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 ${
+            className={`flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg p-2 transition-all active:scale-95 ${
               submission.status === "approved"
-                ? "bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/20 border-transparent font-medium"
-                : "bg-surface hover:bg-green-500/10 hover:border-green-500/50 border-border text-muted hover:text-green-500"
+                ? "border-transparent bg-green-500 font-medium text-white shadow-lg shadow-green-500/20 hover:bg-green-600"
+                : "border-border bg-surface text-muted hover:border-green-500/50 hover:bg-green-500/10 hover:text-green-500"
             }`}
           >
             <Check size={16} />
@@ -165,10 +165,10 @@ export function ActionPanel({ submission }: ActionPanelProps) {
           <button
             onClick={() => handleAction("rejected")}
             disabled={isPending}
-            className={`flex-1 rounded-lg p-2 flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 ${
+            className={`flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg p-2 transition-all active:scale-95 ${
               submission.status === "rejected"
-                ? "bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 border-transparent font-medium"
-                : "bg-surface hover:bg-red-500/10 hover:border-red-500/50 border-border text-muted hover:text-red-500"
+                ? "border-transparent bg-red-500 font-medium text-white shadow-lg shadow-red-500/20 hover:bg-red-600"
+                : "border-border bg-surface text-muted hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-500"
             }`}
           >
             <X size={16} />
@@ -178,48 +178,48 @@ export function ActionPanel({ submission }: ActionPanelProps) {
 
         {/* Global Errors */}
         {error && (
-          <p className="text-xs text-red-500 bg-red-500/10 p-2 rounded border border-red-500/20">
+          <p className="rounded border border-red-500/20 bg-red-500/10 p-2 text-xs text-red-500">
             {error}
           </p>
         )}
 
         {/* Field Validation Errors */}
         {form.formState.errors.grade && (
-          <p className="text-xs text-red-400 mt-2 flex items-center gap-1">
+          <p className="mt-2 flex items-center gap-1 text-xs text-red-400">
             <AlertCircle size={10} /> {form.formState.errors.grade?.message}
           </p>
         )}
         {form.formState.errors.feedback_for_artist && (
-          <p className="text-xs text-red-400 mt-2 flex items-center gap-1">
+          <p className="mt-2 flex items-center gap-1 text-xs text-red-400">
             <AlertCircle size={10} />{" "}
             {form.formState.errors.feedback_for_artist?.message}
           </p>
         )}
       </div>
 
-      <div className="p-6 space-y-8 flex-1">
+      <div className="flex-1 space-y-8 p-6">
         {/* Rating */}
         <div
           className={`space-y-3 transition-opacity duration-300 ${
             submission.status === "rejected"
-              ? "opacity-50 pointer-events-none"
+              ? "pointer-events-none opacity-50"
               : ""
           }`}
         >
           <div className="flex items-center justify-between">
             <label className="label">Rating (1-10)</label>
-            <span className="text-xs font-mono text-muted bg-surface-muted px-2 py-0.5 rounded">
+            <span className="rounded bg-surface-muted px-2 py-0.5 font-mono text-xs text-muted">
               {grade && grade > 0 ? grade : "-"} / 10
             </span>
           </div>
 
-          <div className="flex items-center gap-1 justify-between px-1">
+          <div className="flex items-center justify-between gap-1 px-1">
             <button
               type="button"
               onClick={() =>
                 form.setValue("grade", Math.max(0, (grade || 0) - 1))
               }
-              className="w-8 h-8 rounded-full bg-surface hover:bg-white/10 flex items-center justify-center text-muted hover:text-foreground transition-colors"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-surface text-muted transition-colors hover:bg-white/10 hover:text-foreground"
             >
               -
             </button>
@@ -230,10 +230,10 @@ export function ActionPanel({ submission }: ActionPanelProps) {
                   size={16}
                   className={`transition-colors ${
                     (grade || 0) >= star * 2
-                      ? "text-yellow-400 fill-yellow-400"
+                      ? "fill-yellow-400 text-yellow-400"
                       : (grade || 0) >= star * 2 - 1
-                      ? "text-yellow-400 fill-yellow-400 opacity-50"
-                      : "text-muted/30"
+                        ? "fill-yellow-400 text-yellow-400 opacity-50"
+                        : "text-muted/30"
                   }`}
                 />
               ))}
@@ -245,7 +245,7 @@ export function ActionPanel({ submission }: ActionPanelProps) {
                   shouldValidate: true,
                 })
               }
-              className="w-8 h-8 rounded-full bg-surface hover:bg-white/10 flex items-center justify-center text-muted hover:text-foreground transition-colors"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-surface text-muted transition-colors hover:bg-white/10 hover:text-foreground"
             >
               +
             </button>
@@ -255,7 +255,7 @@ export function ActionPanel({ submission }: ActionPanelProps) {
             min="0"
             max="10"
             step="1"
-            className="w-full accent-primary h-1 bg-surface-muted rounded-lg appearance-none cursor-pointer"
+            className="h-1 w-full cursor-pointer appearance-none rounded-lg bg-surface-muted accent-primary"
             {...form.register("grade", { valueAsNumber: true })}
           />
         </div>
@@ -279,7 +279,7 @@ export function ActionPanel({ submission }: ActionPanelProps) {
           <label className="label flex items-center gap-2">
             <Send size={12} />
             Artist Feedback
-            <span className="text-muted/50 text-xs ml-auto">
+            <span className="ml-auto text-xs text-muted/50">
               (Required for rejection)
             </span>
           </label>
@@ -296,11 +296,11 @@ export function ActionPanel({ submission }: ActionPanelProps) {
       </div>
 
       {/* Save Action */}
-      <div className="p-4 border-t border-border bg-surface/50 backdrop-blur-md sticky bottom-0">
+      <div className="sticky bottom-0 border-t border-border bg-surface/50 p-4 backdrop-blur-md">
         <button
           onClick={() => handleSaveDraft()}
           disabled={isPending}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-lg font-medium transition-colors shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+          className="text-primary-foreground flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3 font-medium shadow-lg shadow-primary/20 transition-colors hover:bg-primary/90"
         >
           {isSavingReview && <Loader2 className="animate-spin" size={16} />}
           {isSavingReview ? "Saving..." : "Submit Review"}

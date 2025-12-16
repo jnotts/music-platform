@@ -30,13 +30,13 @@ export function validateFile(file: File): FileValidationResult {
   const ext = "." + file.name.split(".").pop()?.toLowerCase();
   if (
     !UPLOAD_CONFIG.allowedExtensions.includes(
-      ext as (typeof UPLOAD_CONFIG.allowedExtensions)[number]
+      ext as (typeof UPLOAD_CONFIG.allowedExtensions)[number],
     )
   ) {
     return {
       valid: false,
       error: `Invalid format. Allowed: ${UPLOAD_CONFIG.allowedExtensions.join(
-        ", "
+        ", ",
       )}`,
     };
   }
@@ -54,7 +54,7 @@ export function validateFile(file: File): FileValidationResult {
     // Allow if extension is valid even if MIME type is unexpected
     // Some browsers report different MIME types
     console.warn(
-      `Unexpected MIME type ${file.type} for file ${file.name}, allowing based on extension`
+      `Unexpected MIME type ${file.type} for file ${file.name}, allowing based on extension`,
     );
   }
 

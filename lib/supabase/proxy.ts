@@ -24,7 +24,7 @@ export async function updateSession(request: NextRequest) {
         setAll(cookiesToSet) {
           // Set cookies on the request for downstream server code
           cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
+            request.cookies.set(name, value),
           );
           // Create new response with updated request
           supabaseResponse = NextResponse.next({
@@ -32,11 +32,11 @@ export async function updateSession(request: NextRequest) {
           });
           // Set cookies on the response for the browser
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, options),
           );
         },
       },
-    }
+    },
   );
 
   // Do not run code between createServerClient and getClaims()

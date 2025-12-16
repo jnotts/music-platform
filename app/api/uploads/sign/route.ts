@@ -25,8 +25,8 @@ export async function POST(request: NextRequest) {
     if (!UPLOAD_CONFIG.allowedMimeTypes.includes(contentType)) {
       return errors.badRequest(
         `Invalid file type. Allowed: ${UPLOAD_CONFIG.allowedExtensions.join(
-          ", "
-        )}`
+          ", ",
+        )}`,
       );
     }
 
@@ -35,8 +35,8 @@ export async function POST(request: NextRequest) {
     if (!ext || !UPLOAD_CONFIG.allowedExtensions.includes(`.${ext}`)) {
       return errors.badRequest(
         `Invalid file extension. Allowed: ${UPLOAD_CONFIG.allowedExtensions.join(
-          ", "
-        )}`
+          ", ",
+        )}`,
       );
     }
 
