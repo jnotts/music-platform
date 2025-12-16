@@ -248,21 +248,12 @@ export function useFileUpload(): UseFileUploadReturn {
   );
 
   const clearAll = useCallback(() => {
-    // Delete all completed uploads from storage
-    uploads.forEach((upload) => {
-      if (upload.storagePath) {
-        deleteUploadedFile(upload.storagePath).catch((err) => {
-          console.error("Failed to delete file from storage:", err);
-        });
-      }
-    });
-
     // Cancel all in-progress uploads
     abortControllers.current.forEach((controller) => controller.abort());
     abortControllers.current.clear();
     uploadSpeeds.current.clear();
     setUploads([]);
-  }, [uploads]);
+  }, []);
 
   const isUploading = uploads.some((u) => u.status === "uploading");
   const allComplete =

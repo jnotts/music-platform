@@ -1,6 +1,7 @@
 import { AdminSubmission } from "@/types/admin-submission";
 import { AdminTrackCard } from "./AdminTrackCard";
-import { Mail, Instagram, Globe, Music2 } from "lucide-react";
+import { Mail } from "lucide-react";
+import { InstagramIcon, SpotifyIcon, SoundCloudIcon } from "../icons";
 
 interface SubmissionDetailProps {
   submission: AdminSubmission;
@@ -29,8 +30,17 @@ export function SubmissionDetail({ submission }: SubmissionDetailProps) {
                 href="#"
                 className="flex items-center gap-1.5 transition-colors hover:text-primary"
               >
-                <Instagram size={14} />
+                <InstagramIcon />
                 Instagram
+              </a>
+            )}
+            {submission.artist.socials.spotify && (
+              <a
+                href="#"
+                className="flex items-center gap-1.5 transition-colors hover:text-primary"
+              >
+                <SpotifyIcon />
+                Spotify
               </a>
             )}
             {submission.artist.socials.soundcloud && (
@@ -38,7 +48,7 @@ export function SubmissionDetail({ submission }: SubmissionDetailProps) {
                 href="#"
                 className="flex items-center gap-1.5 transition-colors hover:text-primary"
               >
-                <Music2 size={14} />
+                <SoundCloudIcon />
                 SoundCloud
               </a>
             )}
