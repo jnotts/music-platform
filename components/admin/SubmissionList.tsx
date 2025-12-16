@@ -42,7 +42,7 @@ export function SubmissionList({
   return (
     <div
       className={`flex h-full flex-col transition-all duration-300 ${
-        selectedId ? "w-80" : "w-full"
+        selectedId ? "w-full xl:w-80" : "w-full"
       } overflow-hidden rounded-l-2xl`}
     >
       {/* Header / Search */}

@@ -54,7 +54,7 @@ export default function AdminSubmissionsPage() {
       </header>
 
       {/* Main Layout Area */}
-      <main className="relative z-10 flex flex-1 gap-6 overflow-hidden p-6">
+      <main className="relative z-10 flex flex-1 flex-col gap-6 overflow-y-auto p-4 xl:flex-row xl:overflow-hidden xl:p-6">
         {isLoading ? (
           <div className="flex flex-1 items-center justify-center">
             <Loader2 className="animate-spin text-primary" size={40} />
@@ -64,11 +64,11 @@ export default function AdminSubmissionsPage() {
             {/* Left Panel: Submission List */}
             <div
               className={`flex shrink-0 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
-                selectedId ? "w-80" : "mx-auto w-full max-w-2xl"
+                selectedId ? "w-full xl:w-80" : "mx-auto w-full max-w-2xl"
               }`}
             >
               <div
-                className={`glass flex h-full w-full flex-col overflow-hidden rounded-2xl shadow-2xl`}
+                className={`glass flex h-[400px] w-full flex-col overflow-hidden rounded-2xl shadow-2xl xl:h-full`}
               >
                 <SubmissionList
                   submissions={submissions || []}
@@ -82,13 +82,13 @@ export default function AdminSubmissionsPage() {
             {selectedId && selectedSubmission && (
               <>
                 {/* Center: Details */}
-                <div className="glass animate-in fade-in zoom-in-95 slide-in-from-right-10 min-w-0 flex-1 rounded-2xl shadow-2xl duration-300">
+                <div className="glass animate-in fade-in zoom-in-95 slide-in-from-right-10 min-h-[500px] w-full min-w-0 flex-1 rounded-2xl shadow-2xl duration-300 xl:h-auto">
                   <SubmissionDetail submission={selectedSubmission} />
                 </div>
 
                 {/* Right: Actions */}
-                <div className="animate-in fade-in slide-in-from-right-20 shrink-0 delay-100 duration-500">
-                  <div className="glass h-full overflow-hidden rounded-2xl shadow-2xl">
+                <div className="animate-in fade-in slide-in-from-right-20 w-full shrink-0 delay-100 duration-500 xl:w-96">
+                  <div className="glass h-auto w-full overflow-hidden rounded-2xl shadow-2xl xl:h-full">
                     <ActionPanel
                       key={selectedSubmission.id}
                       submission={selectedSubmission}

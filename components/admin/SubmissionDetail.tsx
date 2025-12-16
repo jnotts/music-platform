@@ -9,15 +9,15 @@ interface SubmissionDetailProps {
 
 export function SubmissionDetail({ submission }: SubmissionDetailProps) {
   return (
-    <div className="h-full flex-1 overflow-y-auto p-8">
+    <div className="h-full flex-1 overflow-y-auto p-4 xl:p-8">
       {/* Artist Profile Header */}
-      <div className="mb-8 flex items-start gap-6">
-        <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/80 to-primary/10 text-3xl font-bold text-white shadow-lg">
+      <div className="mb-8 flex flex-col items-center gap-6 text-center sm:flex-row sm:items-start sm:text-left">
+        <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-primary/80 to-primary/10 text-3xl font-bold text-white shadow-lg">
           {submission.artist.name.charAt(0)}
         </div>
         <div className="flex-1">
           <h1 className="mb-1 text-3xl font-bold">{submission.artist.name}</h1>
-          <div className="mb-4 flex items-center gap-4 text-sm text-muted">
+          <div className="mb-4 flex flex-wrap items-center justify-center gap-4 text-sm text-muted sm:justify-start">
             <a
               href={`mailto:${submission.artist.email}`}
               className="flex items-center gap-1.5 transition-colors hover:text-primary"
