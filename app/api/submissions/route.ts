@@ -5,6 +5,53 @@ import { createSubmissionSchema } from "@/lib/schemas";
 import { sendConfirmationEmail } from "@/lib/email/service";
 
 /**
+ * Trigger metadata extraction for a track (fire-and-forget)
+ * Calls the Edge Function without blocking the response
+ */
+async function triggerMetadataExtraction(track: {
+  id: string;
+  storage_path: string;
+  duration_seconds: number | null;
+}) {
+  // Skip if duration already exists
+  if (track.duration_seconds !== null) {
+    return;
+  }
+
+  const edgeFunctionUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/extract-audio-duration`
+    : null;
+
+  if (!edgeFunctionUrl) {
+    console.warn(
+      "Edge Function URL not configured, skipping metadata extraction",
+    );
+    return;
+  }
+
+  // Fire-and-forget: don't await this
+  fetch(edgeFunctionUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.SUPABASE_SECRET_KEY}`,
+    },
+    body: JSON.stringify({
+      type: "INSERT",
+      table: "tracks",
+      record: {
+        id: track.id,
+        storage_path: track.storage_path,
+        duration_seconds: track.duration_seconds,
+      },
+      old_record: null,
+    }),
+  }).catch((error) => {
+    console.error(`Edge Function call failed for track ${track.id}:`, error);
+  });
+}
+
+/**
  * POST /api/submissions
  * Create a new submission with artist info and tracks.
  * This is a public endpoint - no auth required.
@@ -80,6 +127,17 @@ export async function POST(request: NextRequest) {
       console.error("Error creating tracks:", tracksError);
       return errors.internal("Failed to create track records");
     }
+
+    // Trigger background metadata extraction (fire-and-forget)
+    tracksData.forEach((track) => {
+      triggerMetadataExtraction(track).catch((err) => {
+        console.error(
+          `Failed to trigger metadata extraction for track ${track.id}:`,
+          err,
+        );
+        // Don't fail the submission
+      });
+    });
 
     // Send confirmation email
     const emailResult = await sendConfirmationEmail({

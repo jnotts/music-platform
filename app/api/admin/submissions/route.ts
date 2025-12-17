@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { ok, errors, requireAdmin } from "@/lib/api";
 import { createAdminClient } from "@/lib/supabase/server";
+import { formatDuration } from "@/lib/validation/upload";
 
 /**
  * GET /api/admin/submissions
@@ -59,9 +60,7 @@ export async function GET(request: NextRequest) {
         bpm: t.bpm?.toString(),
         key: t.key,
         storagePath: t.storage_path,
-        duration: t.duration_seconds
-          ? formatDuration(t.duration_seconds)
-          : undefined,
+        duration: formatDuration(t.duration_seconds),
       })),
       rating: sub.review?.[0]?.rating,
       internalNotes: sub.review?.[0]?.internal_notes,
@@ -73,10 +72,4 @@ export async function GET(request: NextRequest) {
     console.error("Error in GET /api/admin/submissions:", err);
     return errors.internal("An unexpected error occurred");
   }
-}
-
-function formatDuration(seconds: number): string {
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs.toString().padStart(2, "0")}`;
 }

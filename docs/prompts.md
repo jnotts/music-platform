@@ -79,3 +79,17 @@ We need the templates to be editable and saved to the db. for now, consider only
 here are relevant files: @lib/schemas/template.ts @app/admin/templates/page.tsx @app/admin/templates/[key]/page.tsx @app/api/admin/templates/[key]/route.ts @app/api/admin/templates/route.ts
 Make sure to create functinos that call the rest endpoints in @lib/api/client.ts and make use of these functions in custom hooks @hooks/ - then make use of the hooks in the relevant admin pages referenced above.
 Template use {{variables}} and integrate tiptap as the editor. Use bun for installs.
+
+### Prompt 009 - background jobs for metadata extraction
+
+I need to add background jobs for metadata extraction (audio compression excluded for now). This should happen when users upload their audio. The main metadata to extract is duration (track length in seconds), which is currently missing from track records - see duration_seconds field in @lib/types/db.ts Track type.
+
+Entry point: @app/page.tsx contains upload hooks that call @lib/api/client.ts. Track records are created in @app/api/submissions/route.ts.
+
+Use supabase edge functions with:
+- EdgeRuntime.waitUntil()` for true background processing
+- music-metadata library for parsing
+- Fire-and-forget trigger from API route after track creation
+- Returns `202 Accepted` immediately while processing continues
+- Sets `duration_seconds: -1` on extraction failure, `null` during processing, `>0` on success
+- Admin UI displays formatted duration using `formatDuration()` helper in @lib/validation/upload.ts

@@ -126,6 +126,37 @@ The platform uses the following tables in Supabase:
 | user_id    | uuid        | Primary key, references auth.users(id) |
 | created_at | timestamptz | Record creation time                   |
 
+## Background Processing
+
+### Audio Metadata Extraction
+
+The platform automatically extracts audio metadata (duration) from uploaded tracks using Supabase Edge Functions.
+
+**How it works:**
+
+1. Artist uploads audio files to Supabase Storage
+2. Track records are created in the database with `duration_seconds: null`
+3. API route triggers the `extract-audio-duration` Edge Function (fire-and-forget)
+4. Function downloads the file, extracts duration using ffprobe, and updates the track record
+5. Admin UI displays the formatted duration (e.g., "3:45")
+
+**Setup:**
+
+```bash
+# Install Supabase CLI
+npm install -g supabase
+
+# Link to your project
+supabase link --project-ref <your-project-ref>
+
+# Deploy background processing function
+supabase functions deploy extract-audio-duration
+```
+
+The API route automatically triggers metadata extraction when tracks are created.
+
+**For detailed documentation, see [supabase/functions/README.md](./supabase/functions/README.md)**
+
 ## API Endpoints
 
 ### Public

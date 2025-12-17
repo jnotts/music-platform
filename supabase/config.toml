@@ -1,0 +1,60 @@
+# Supabase Configuration File
+# This file is used by the Supabase CLI for local development and deployment
+
+[project]
+# Project ID from Supabase dashboard
+# Replace with your actual project ID when linking
+# project_id = "prznesavfuclsrvxtxei"
+
+[api]
+# Port to use for the API URL
+port = 54321
+# Schemas to expose in your API
+schemas = ["public", "storage", "graphql_public"]
+# Extra schemas to add to the search_path of every request
+extra_search_path = ["public"]
+# The maximum number of rows returned from a view, table, or stored procedure
+max_rows = 1000
+
+[db]
+# Port to use for the local database URL
+port = 54322
+# Shadow database for migrations
+shadow_port = 54320
+# The database major version
+major_version = 17
+
+[studio]
+# Port to use for Supabase Studio
+port = 54323
+
+[inbucket]
+# Port to use for the email testing server (MailHog/Inbucket)
+port = 54324
+
+[storage]
+# The maximum file size allowed (in MB)
+file_size_limit = 50
+
+[auth]
+# The base URL of your website
+site_url = "http://localhost:3000"
+# A list of allowed URLs that can be used for redirects
+additional_redirect_urls = ["https://localhost:3000"]
+# How long tokens are valid for (in seconds)
+jwt_expiry = 3600
+# Allow/disallow new user signups
+enable_signup = true
+
+[auth.email]
+# Allow/disallow new user signups via email
+enable_signup = true
+# If enabled, a user will be required to confirm any email change on both the old and new email addresses
+double_confirm_changes = true
+# If enabled, users need to confirm their email address before signing in
+enable_confirmations = false
+
+# Edge Functions configuration
+[functions.extract-audio-duration]
+# Verify JWT for function calls (disable for webhook triggers)
+verify_jwt = false

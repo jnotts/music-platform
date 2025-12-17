@@ -82,3 +82,17 @@ export function formatEta(seconds: number | null): string {
   const secs = Math.round(seconds % 60);
   return `${mins}m ${secs}s`;
 }
+
+/**
+ * Format track duration in MM:SS format
+ * Returns appropriate status message for null or negative values
+ */
+export function formatDuration(seconds: number | null): string {
+  if (seconds === null) return "Processing...";
+  if (seconds === -1) return "N/A";
+  if (seconds < 0) return "N/A";
+
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
