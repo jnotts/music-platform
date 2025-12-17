@@ -87,9 +87,12 @@ I need to add background jobs for metadata extraction (audio compression exclude
 Entry point: @app/page.tsx contains upload hooks that call @lib/api/client.ts. Track records are created in @app/api/submissions/route.ts.
 
 Use supabase edge functions with:
+
 - EdgeRuntime.waitUntil()` for true background processing
 - music-metadata library for parsing
 - Fire-and-forget trigger from API route after track creation
 - Returns `202 Accepted` immediately while processing continues
 - Sets `duration_seconds: -1` on extraction failure, `null` during processing, `>0` on success
 - Admin UI displays formatted duration using `formatDuration()` helper in @lib/validation/upload.ts
+
+_More back and forth used to reach working impl_
