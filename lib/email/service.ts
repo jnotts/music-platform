@@ -9,6 +9,7 @@ export interface EmailVariables {
   tracks_count?: number;
   status?: string;
   feedback?: string;
+  grade?: number;
   [key: string]: string | number | undefined;
 }
 
@@ -109,12 +110,14 @@ export async function sendApprovalEmail(payload: {
   artistName: string;
   artistEmail: string;
   submissionId: string;
+  grade?: number;
   feedback?: string;
 }) {
   return sendTemplatedEmail("approved", payload.artistEmail, {
     artist_name: payload.artistName,
     submission_id: payload.submissionId.slice(0, 8),
     status: "Approved",
+    grade: payload.grade,
     feedback: payload.feedback || "No feedback provided",
   });
 }

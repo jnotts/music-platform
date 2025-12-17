@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     // Validate request body
     const parseResult = createSubmissionSchema.safeParse(body);
     if (!parseResult.success) {
-      return errors.validation(parseResult.error.format());
+      return errors.validation(parseResult.error);
     }
 
     const { artist, tracks } = parseResult.data;

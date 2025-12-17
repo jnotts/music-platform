@@ -85,12 +85,15 @@ export function ActionPanel({
     form.clearErrors(); // Clear previous errors
     const data = form.getValues();
 
+    if (!targetStatus) {
+      setError("Submission must be approved or rejected to review.");
+      return;
+    }
+
     // Validation only if a status is selected
-    if (targetStatus === "approved") {
-      if (!data.grade || data.grade < 1) {
-        form.setError("grade", { message: "Rating required for approval" });
-        return;
-      }
+    if (!data.grade || data.grade < 1) {
+      form.setError("grade", { message: "Rating required for approval" });
+      return;
     }
 
     if (targetStatus === "rejected") {
@@ -103,20 +106,16 @@ export function ActionPanel({
     }
 
     try {
-      // 1. Save Review First
+      // Single API call - save review with status
       await saveReview({
         submissionId: submission.id,
         data: {
           grade: data.grade || 0,
           internal_notes: data.internal_notes || undefined,
           feedback_for_artist: data.feedback_for_artist || undefined,
+          status: targetStatus,
         },
       });
-
-      // 2. Update Status if changed and selected
-      if (targetStatus && targetStatus !== submission.status) {
-        await updateStatus({ id: submission.id, status: targetStatus });
-      }
 
       // Optional: show toast
     } catch (err) {
@@ -208,11 +207,7 @@ export function ActionPanel({
 
       <div className="flex-1 space-y-8 p-6">
         {/* Rating */}
-        <div
-          className={`space-y-3 transition-opacity duration-300 ${
-            targetStatus === "rejected" ? "pointer-events-none opacity-50" : ""
-          }`}
-        >
+        <div className={`space-y-3 transition-opacity duration-300`}>
           <div className="flex items-center justify-between">
             <label className="label">Rating (1-10)</label>
             <span className="rounded bg-surface-muted px-2 py-0.5 font-mono text-xs text-muted">
@@ -307,7 +302,7 @@ export function ActionPanel({
         <button
           onClick={() => handleSubmit()}
           disabled={isPending}
-          className="text-primary-foreground flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3 font-medium shadow-lg shadow-primary/20 transition-colors hover:bg-primary/90"
+          className="text-primary-foreground btn-primary flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3 font-medium shadow-lg shadow-primary/20 transition-colors hover:bg-primary/90"
         >
           {isSavingReview && <Loader2 className="animate-spin" size={16} />}
           {isSavingReview ? "Saving..." : "Submit Review"}

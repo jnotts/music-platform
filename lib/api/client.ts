@@ -77,10 +77,11 @@ export async function updateSubmissionStatus(
 
 /**
  * Save (upsert) review details
+ * Optionally update submission status and send email
  */
 export async function saveReview(
   submissionId: string,
-  data: ReviewInput,
+  data: ReviewInput & { status: SubmissionStatus },
 ): Promise<void> {
   const response = await fetch(`/api/admin/reviews/${submissionId}`, {
     method: "PUT",

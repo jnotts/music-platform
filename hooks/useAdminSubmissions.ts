@@ -71,7 +71,7 @@ export function useSaveReview() {
       data,
     }: {
       submissionId: string;
-      data: ReviewInput;
+      data: ReviewInput & { status: SubmissionStatus };
     }) => saveReview(submissionId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ADMIN_SUBMISSIONS_KEY });

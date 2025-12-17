@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     // Validate request body
     const parseResult = signUploadSchema.safeParse(body);
     if (!parseResult.success) {
-      return errors.validation(parseResult.error.format());
+      return errors.validation(parseResult.error);
     }
 
     const { filename, contentType, sizeBytes } = parseResult.data;

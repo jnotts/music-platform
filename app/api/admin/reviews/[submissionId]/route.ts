@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { ok, errors, requireAdmin } from "@/lib/api";
 import { createAdminClient } from "@/lib/supabase/server";
 import { reviewSchema } from "@/lib/schemas";
+import { sendApprovalEmail, sendRejectionEmail } from "@/lib/email/service";
 
 type RouteParams = {
   params: Promise<{ submissionId: string }>;
@@ -51,6 +52,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 /**
  * PUT /api/admin/reviews/[submissionId]
  * Create or update a review for a submission.
+ * Optionally update submission status and send email.
  * Admin-only endpoint.
  */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
@@ -67,28 +69,24 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const body = await request.json();
 
-    // Validate request body
-    const parseResult = reviewSchema.safeParse(body);
+    // Extract status separately (not part of review schema)
+    const { status, ...reviewData } = body;
+
+    // Validate review data
+    const parseResult = reviewSchema.safeParse(reviewData);
     if (!parseResult.success) {
-      return errors.validation(parseResult.error.format());
+      return errors.validation(parseResult.error);
+    }
+
+    if (!status || !["approved", "rejected"].includes(status)) {
+      return errors.validation("Review must approve or reject the submission");
     }
 
     const { grade, internal_notes, feedback_for_artist } = parseResult.data;
     const adminClient = createAdminClient();
 
-    // Check if submission exists
-    const { data: submission, error: subError } = await adminClient
-      .from("submissions")
-      .select("id")
-      .eq("id", submissionId)
-      .single();
-
-    if (subError || !submission) {
-      return errors.notFound("Submission");
-    }
-
-    // Upsert review (insert or update based on submission_id)
-    const { data: review, error } = await adminClient
+    // 1. Upsert review (will fail naturally if submission doesn't exist due to FK constraint)
+    const { data: review, error: reviewError } = await adminClient
       .from("reviews")
       .upsert(
         {
@@ -105,9 +103,52 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       .select()
       .single();
 
-    if (error) {
-      console.error("Error upserting review:", error);
+    if (reviewError) {
+      console.error("Error upserting review:", reviewError);
+      // Foreign key violation means submission doesn't exist
+      if (reviewError.code === "23503") {
+        return errors.notFound("Submission");
+      }
       return errors.internal("Failed to save review");
+    }
+
+    // 2. Update submission status AND get artist data in one call
+    const { data: submissionWithArtist, error: statusError } = await adminClient
+      .from("submissions")
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq("id", submissionId)
+      .select("artist:artists(name, email)")
+      .single();
+
+    if (statusError) {
+      console.error("Error updating status:", statusError);
+      return errors.internal("Failed to update submission status");
+    }
+
+    // 3. Send email based on approved/rejected status
+
+    if (submissionWithArtist?.artist) {
+      const artist = Array.isArray(submissionWithArtist.artist)
+        ? submissionWithArtist.artist[0]
+        : submissionWithArtist.artist;
+
+      if (artist?.name && artist?.email) {
+        const emailFn =
+          status === "approved" ? sendApprovalEmail : sendRejectionEmail;
+
+        const emailResult = await emailFn({
+          artistName: artist.name,
+          artistEmail: artist.email,
+          submissionId,
+          feedback: feedback_for_artist || undefined,
+          grade: grade ?? undefined,
+        });
+
+        if (!emailResult.success) {
+          console.error("Failed to send email:", emailResult.error);
+          // Don't fail the entire request if email fails
+        }
+      }
     }
 
     return ok(review);

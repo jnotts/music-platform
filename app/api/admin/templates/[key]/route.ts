@@ -86,7 +86,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     // Validate request body
     const parseResult = templateSchema.safeParse(body);
     if (!parseResult.success) {
-      return errors.validation(parseResult.error.format());
+      return errors.validation(parseResult.error);
     }
 
     const { subject, html } = parseResult.data;

@@ -1,7 +1,6 @@
 import { NextRequest } from "next/server";
 import { ok, errors, requireAdmin } from "@/lib/api";
 import { createAdminClient } from "@/lib/supabase/server";
-import { updateStatusSchema } from "@/lib/schemas";
 
 type RouteParams = {
   params: Promise<{ id: string }>;
@@ -65,7 +64,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
 /**
  * PATCH /api/admin/submissions/[id]
- * Update submission status.
+ * Update submission status (for quick toggles only).
+ * For approve/reject with review, use PUT /api/admin/reviews/[submissionId] instead.
  * Admin-only endpoint.
  */
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
@@ -74,7 +74,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   // Check admin auth
   const authResult = await requireAdmin();
   if (!authResult.ok) {
-    // ...
+    return authResult.error.code === "UNAUTHORIZED"
+      ? errors.unauthorized()
+      : errors.forbidden();
   }
 
   try {
@@ -83,7 +85,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     const adminClient = createAdminClient();
 
-    // 1. Update Submission Status
+    // Update submission status
     if (status) {
       const { error: statusError } = await adminClient
         .from("submissions")
