@@ -96,3 +96,8 @@ Use supabase edge functions with:
 - Admin UI displays formatted duration using `formatDuration()` helper in @lib/validation/upload.ts
 
 _More back and forth used to reach working impl_
+
+### Prompt 010 - realtime updates for admin submissions dashboard and track updates
+
+Implement realtime updates for the admin submissions dashboard by integrating Supabase Broadcast. Configure
+app/admin/submissions/page.tsx to automatically listen for new-submission events from the server and track-updated events from the metadata extraction Edge Function, ensuring the UI reflects new data instantly without manual refreshes. Additionally, broadcast updates to track records from the edge function supabase/functions/extract-audio-duration/index.ts to also invalidate and refetch data.

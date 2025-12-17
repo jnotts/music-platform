@@ -10,12 +10,16 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import {
   useAdminSubmissions,
   useSubmissionReview,
+  useSubscribeToSubmissions,
 } from "@/hooks/useAdminSubmissions";
 
 /**
  * Admin submissions main interactive prototype.
  */
 export default function AdminSubmissionsPage() {
+  // Subscribe to realtime updates
+  useSubscribeToSubmissions();
+
   const { data: submissions, isLoading } = useAdminSubmissions();
   const [selectedId, setSelectedId] = useState<string | null>(null);
 

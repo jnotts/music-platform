@@ -13,6 +13,7 @@ interface WebhookPayload {
   table: string;
   record: {
     id: string;
+    submission_id: string;
     storage_path: string;
     duration_seconds: number | null;
   };
@@ -147,6 +148,34 @@ Deno.serve(async (req) => {
         console.log(
           `Successfully updated track ${trackId} with duration ${durationSeconds}s`,
         );
+
+        // 5. Broadcast realtime event (track-updated)
+        // Wait for connection to be established
+        const channel = supabase.channel("admin-submissions");
+
+        await new Promise<void>((resolve, reject) => {
+          channel.subscribe(async (status) => {
+            if (status === "SUBSCRIBED") {
+              try {
+                await channel.send({
+                  type: "broadcast",
+                  event: "track-updated",
+                  payload: {
+                    id: trackId,
+                    submission_id: payload.record.submission_id,
+                  },
+                });
+                console.log(`Broadcasted track-updated for ${trackId}`);
+                supabase.removeChannel(channel);
+                resolve();
+              } catch (err) {
+                reject(err);
+              }
+            } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+              reject(new Error(`Failed to subscribe: ${status}`));
+            }
+          });
+        });
       } catch (error) {
         console.error(
           `Failed to extract duration for track ${trackId} (${storagePath}):`,

@@ -152,7 +152,18 @@ export async function POST(request: NextRequest) {
       // Continue anyway - don't fail the submission
     }
 
-    // TODO: Broadcast realtime event for new submission
+    // Broadcast realtime event for new submission
+    const channel = adminClient.channel("admin-submissions");
+    channel.subscribe(async (status) => {
+      if (status === "SUBSCRIBED") {
+        await channel.send({
+          type: "broadcast",
+          event: "new-submission",
+          payload: { id: submissionData.id },
+        });
+        adminClient.removeChannel(channel);
+      }
+    });
 
     return ok(
       {
