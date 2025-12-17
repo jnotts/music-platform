@@ -148,6 +148,16 @@ export function TrackCard({
             />
           </div>
         </div>
+        <div className="space-y-1">
+          <label className="label">Short Description</label>
+          <textarea
+            value={metadata?.description || ""}
+            onChange={(e) => onMetadataChange("description", e.target.value)}
+            placeholder="Key features, mood, or context..."
+            rows={2}
+            className="w-full resize-none border-b border-border bg-transparent py-1 text-sm transition-colors outline-none placeholder:text-muted/30 focus:border-primary"
+          />
+        </div>
       </div>
     </div>
   );

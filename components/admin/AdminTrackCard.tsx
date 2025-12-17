@@ -1,4 +1,3 @@
-import { Music } from "lucide-react";
 import { AdminTrack } from "@/types/admin-submission";
 import { WaveformPlayer } from "./WaveformPlayer";
 import { useTrackUrl } from "@/hooks/useTrackUrl";
@@ -19,18 +18,23 @@ export function AdminTrackCard({ track }: AdminTrackCardProps) {
   return (
     <div className="glass group flex items-center gap-4 rounded-xl border border-white/5 bg-surface p-4 transition-colors hover:bg-white/10">
       <div className="min-w-0 flex-1">
-        <div className="mb-2 flex items-center justify-between">
-          <div>
+        <div className="mb-2">
+          <div className="flex items-center justify-between">
             <h4 className="truncate text-sm font-medium">{track.title}</h4>
-            <div className="flex gap-2 text-xs text-muted">
-              {track.genre && <span>{track.genre}</span>}
-              {track.bpm && <span>• {track.bpm} BPM</span>}
-              {track.key && <span>• {track.key}</span>}
+            <div className="font-mono text-xs text-muted/50">
+              {track.duration || "--:--"}
             </div>
           </div>
-          <div className="font-mono text-xs text-muted/50">
-            {track.duration || "--:--"}
+          <div className="flex flex-wrap gap-2 text-xs text-muted">
+            {track.genre && <span>{track.genre}</span>}
+            {track.bpm && <span>• {track.bpm} BPM</span>}
+            {track.key && <span>• {track.key}</span>}
           </div>
+          {track.description && (
+            <p className="mt-1 line-clamp-2 text-xs text-muted/70">
+              {track.description}
+            </p>
+          )}
         </div>
 
         {/* Waveform Visualization & Player */}

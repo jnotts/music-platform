@@ -11,6 +11,7 @@ export interface AdminTrack {
   bpm?: string;
   key?: string;
   duration?: string;
+  description?: string; // Short description from artist
   storagePath: string; // Used to fetch signed URL
 }
 
