@@ -385,9 +385,16 @@ export default function ArtistSubmissionPage() {
                     <input
                       type="tel"
                       placeholder="+1 (555) 000-0000"
-                      className="input"
+                      className={`input ${
+                        form.formState.errors.phone ? "!border-error" : ""
+                      }`}
                       {...form.register("phone")}
                     />
+                    {form.formState.errors.phone && (
+                      <p className="text-xs text-error">
+                        {form.formState.errors.phone.message}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-1.5">
