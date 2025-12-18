@@ -16,7 +16,7 @@ export function AdminTrackCard({ track }: AdminTrackCardProps) {
   } = useTrackUrl(track.id);
 
   return (
-    <div className="glass group flex items-center gap-4 rounded-xl border border-white/5 bg-surface p-4 transition-colors hover:bg-white/10">
+    <div className="glass group flex items-center gap-4 rounded-xl border border-white/5 bg-surface/50 p-4 transition-colors hover:bg-white/10">
       <div className="min-w-0 flex-1">
         <div className="mb-2">
           <div className="flex items-center justify-between">

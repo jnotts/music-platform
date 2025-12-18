@@ -44,7 +44,7 @@ export function AdminNav({
         {backLink && (
           <Link
             href={backLink.href}
-            className="p-2 -ml-2 hover:bg-surface-muted rounded-lg transition-colors text-muted hover:text-foreground"
+            className="-ml-2 rounded-lg p-2 text-muted transition-colors hover:bg-surface-muted hover:text-foreground"
           >
             <ArrowLeft size={20} />
           </Link>

@@ -221,7 +221,7 @@ export function ActionPanel({
               onClick={() =>
                 form.setValue("grade", Math.max(0, (grade || 0) - 1))
               }
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-surface text-muted transition-colors hover:bg-white/10 hover:text-foreground"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-surface text-muted transition-colors hover:bg-white/10 hover:text-foreground"
             >
               -
             </button>
@@ -247,7 +247,7 @@ export function ActionPanel({
                   shouldValidate: true,
                 })
               }
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-surface text-muted transition-colors hover:bg-white/10 hover:text-foreground"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-surface text-muted transition-colors hover:bg-white/10 hover:text-foreground"
             >
               +
             </button>

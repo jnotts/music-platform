@@ -64,7 +64,8 @@ export function TemplatePreview({
       <div>
         <h2 className="mb-2 text-sm font-medium text-muted">Preview</h2>
         <p className="text-xs text-muted">
-          Showing with sample data for <span className="capitalize">{templateKey}</span> template
+          Showing with sample data for{" "}
+          <span className="capitalize">{templateKey}</span> template
         </p>
       </div>
 
@@ -74,7 +75,9 @@ export function TemplatePreview({
           <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
             <div className="text-xs font-medium text-gray-500">Subject</div>
             <div className="mt-1 font-semibold text-gray-900">
-              {previewSubject || <span className="text-gray-400">No subject</span>}
+              {previewSubject || (
+                <span className="text-gray-400">No subject</span>
+              )}
             </div>
           </div>
         )}
@@ -82,13 +85,17 @@ export function TemplatePreview({
         {/* Email Body */}
         <div
           className="prose prose-sm max-w-none px-6 py-6 text-gray-900"
-          dangerouslySetInnerHTML={{ __html: previewHtml || "<p class='text-gray-400'>Start typing to see preview...</p>" }}
+          dangerouslySetInnerHTML={{
+            __html:
+              previewHtml ||
+              "<p class='text-gray-400'>Start typing to see preview...</p>",
+          }}
         />
       </div>
 
       {/* Variable Legend */}
       <div className="rounded-xl border border-border bg-surface-muted p-4">
-        <div className="mb-2 text-xs font-medium uppercase tracking-wide text-muted">
+        <div className="mb-2 text-xs font-medium tracking-wide text-muted uppercase">
           Sample Data
         </div>
         <div className="space-y-1">

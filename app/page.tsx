@@ -405,7 +405,7 @@ export default function ArtistSubmissionPage() {
                     <button
                       type="button"
                       onClick={() => setShowSocialsManual(!showSocialsManual)}
-                      className="flex w-full items-center justify-between text-xs font-semibold tracking-wider text-muted uppercase transition-colors hover:text-foreground dark:hover:text-white"
+                      className="flex w-full cursor-pointer items-center justify-between text-xs font-semibold tracking-wider text-muted uppercase transition-colors hover:text-foreground dark:hover:text-white"
                     >
                       <span>
                         Social Profiles{" "}

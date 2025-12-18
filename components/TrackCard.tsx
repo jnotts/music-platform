@@ -49,7 +49,7 @@ export function TrackCard({
         <button
           type="button"
           onClick={onRemove}
-          className="text-muted transition-colors hover:text-error"
+          className="cursor-pointer text-muted transition-colors hover:text-error"
         >
           <X size={16} />
         </button>

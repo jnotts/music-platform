@@ -67,7 +67,7 @@ export default function AdminLoginPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#0B0D0F] text-[#F5F3EE]">
         <div className="text-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#2D7DFF] border-t-transparent mx-auto" />
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-[#2D7DFF] border-t-transparent" />
           <p className="mt-4 text-sm text-[#A8A29E]">Checking session...</p>
         </div>
       </div>

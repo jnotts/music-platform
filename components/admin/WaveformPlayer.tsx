@@ -62,7 +62,7 @@ export function WaveformPlayer({
       <button
         onClick={togglePlay}
         disabled={isLoading}
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary transition-all hover:bg-primary hover:text-white disabled:opacity-50"
+        className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-primary/20 text-primary transition-all hover:bg-primary hover:text-white disabled:opacity-50"
       >
         {isLoading ? (
           <Loader2 size={18} className="animate-spin" />

@@ -17,12 +17,12 @@
   --color-primary-shadow-hover: rgba(45, 125, 255, 0.35);
   --color-primary-ring: rgba(45, 125, 255, 0.4);
 
-  --color-background: #F4F9FC;
+  --color-background: #f4f9fc;
   --color-foreground: #0f172a;
   --color-muted: #64748b;
 
-  --color-surface: #FFFFFFCC;
-  --color-surface-muted: #D1D9E0CC;
+  --color-surface: #ffffffcc;
+  --color-surface-muted: #d1d9e0cc;
   --color-border: rgba(15, 23, 42, 0.3);
 
   --color-success: #16a34a;
@@ -33,16 +33,14 @@
    BASE STYLES w/ GRADIENTS
    ============================================ */
 @layer base {
-
   /* Dark mode variable overrides */
   .dark {
-    --color-background: #272A2B;
+    --color-background: #272a2b;
     --color-foreground: #f5f3ee;
     --color-muted: #9ca3af;
     --color-surface: rgba(255, 255, 255, 0.1);
     --color-surface-muted: rgba(255, 255, 255, 0.05);
     --color-border: rgba(255, 255, 255, 0.1);
-
   }
 
   body {
@@ -52,7 +50,6 @@
     color: var(--color-foreground);
     font-family: var(--font-sans), system-ui, sans-serif;
     background-color: #f8f9fa;
-
   }
 
   /* Blurred background layer */
@@ -85,13 +82,14 @@
    COMPONENTS - Reusable Patterns (minimal)
    ============================================ */
 @layer components {
-
   /* Premium Glass Effect */
   .glass {
     @apply backdrop-blur-md;
-    background: linear-gradient(145deg,
-        rgba(255, 255, 255, 0.4) 0%,
-        rgba(255, 255, 255, 0.2) 100%);
+    background: linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0.2) 100%
+    );
     border: 1px solid rgba(255, 255, 255, 0.3);
     box-shadow:
       0 8px 32px 0 rgba(0, 0, 0, 0.1),
@@ -100,9 +98,11 @@
 
   .dark .glass {
     @apply backdrop-blur-lg;
-    background: linear-gradient(145deg,
-        rgba(20, 20, 20, 0.6) 0%,
-        rgba(20, 20, 20, 0.4) 100%);
+    background: linear-gradient(
+      145deg,
+      rgba(20, 20, 20, 0.6) 0%,
+      rgba(20, 20, 20, 0.4) 100%
+    );
     border: 1px solid rgba(255, 255, 255, 0.05);
     box-shadow:
       0 8px 32px 0 rgba(0, 0, 0, 0.4),

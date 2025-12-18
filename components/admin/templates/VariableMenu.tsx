@@ -78,9 +78,9 @@ export function VariableMenu({ editor, templateKey }: VariableMenuProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 mt-2 w-48 overflow-hidden rounded-xl border border-white/10 bg-[#0B0D0F] shadow-lg">
+        <div className="absolute top-full left-0 z-50 mt-2 w-48 overflow-hidden rounded-xl border border-white/10 bg-[#0B0D0F] shadow-lg">
           <div className="p-2">
-            <div className="mb-2 px-2 text-xs font-medium uppercase tracking-wide text-[#A8A29E]">
+            <div className="mb-2 px-2 text-xs font-medium tracking-wide text-[#A8A29E] uppercase">
               Available Variables
             </div>
             {variables.map((variable) => (

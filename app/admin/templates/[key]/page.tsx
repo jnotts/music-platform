@@ -179,7 +179,7 @@ export default function AdminTemplateEditorPage({ params }: PageProps) {
                 <button
                   type="submit"
                   disabled={updateMutation.isPending || !form.formState.isDirty}
-                  className="flex items-center gap-2 rounded-xl bg-primary px-6 py-3 font-medium text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex cursor-pointer items-center gap-2 rounded-xl bg-primary px-6 py-3 font-medium text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
                   title={
                     !form.formState.isDirty
                       ? "No changes to save"
