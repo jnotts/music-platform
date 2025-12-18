@@ -102,11 +102,7 @@ export function SubmissionList({
   };
 
   return (
-    <div
-      className={`flex h-full flex-col transition-all duration-300 ${
-        selectedId ? "w-full xl:w-80" : "w-full"
-      } overflow-hidden rounded-l-2xl`}
-    >
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-l-2xl transition-all duration-300">
       {/* Header / Search */}
       <div className="space-y-3 border-b border-border p-4">
         <div className="flex items-center justify-between">

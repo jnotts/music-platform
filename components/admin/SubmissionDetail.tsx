@@ -9,7 +9,7 @@ interface SubmissionDetailProps {
 
 export function SubmissionDetail({ submission }: SubmissionDetailProps) {
   return (
-    <div className="h-full flex-1 overflow-y-auto p-4 xl:p-8">
+    <div className="h-full flex-1 overflow-y-auto p-4 lg:p-8">
       {/* Artist Profile Header */}
       <div className="mb-8 flex flex-col items-center gap-6 text-center sm:flex-row sm:items-start sm:text-left">
         <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-primary/80 to-primary/10 text-3xl font-bold text-white shadow-lg">
