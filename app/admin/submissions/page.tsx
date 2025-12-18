@@ -40,7 +40,7 @@ export default function AdminSubmissionsPage() {
           <div className="mx-2 h-6 w-px bg-border" />
           <div className="flex items-center gap-2">
             <Layout size={18} className="text-primary" />
-            <h1 className="hidden font-semibold tracking-tight">
+            <h1 className="hidden font-semibold tracking-tight sm:block">
               Submission Manager
             </h1>
           </div>

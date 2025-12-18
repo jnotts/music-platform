@@ -8,6 +8,37 @@ import { NextResponse, type NextRequest } from "next/server";
  * - Validates and refreshes the JWT using getClaims()
  * - Writes refreshed tokens to both request and response cookies
  */
+/**
+ * Retry helper for transient network errors
+ */
+async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  maxRetries = 2,
+  baseDelay = 100,
+): Promise<T> {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      const isLastAttempt = attempt === maxRetries;
+      const isNetworkError =
+        error instanceof Error &&
+        (error.message.includes("fetch failed") ||
+          error.message.includes("SSL") ||
+          error.message.includes("ECONNRESET"));
+
+      if (isLastAttempt || !isNetworkError) {
+        throw error;
+      }
+
+      // Exponential backoff: 100ms, 200ms
+      const delay = baseDelay * Math.pow(2, attempt);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error("Retry failed"); // Should never reach here
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -42,15 +73,29 @@ export async function updateSession(request: NextRequest) {
   // Do not run code between createServerClient and getClaims()
   // A simple mistake could make your app insecure.
 
-  // getClaims() validates and refreshes the JWT if needed
-  // This is preferred over getUser() or getSession() in server code
-  const { error } = await supabase.auth.getClaims();
-
-  // If there's an error getting claims (e.g., user not logged in),
-  // we still return the response - just without a valid session
-  if (error) {
-    // Optional: You could redirect to login here for protected routes
-    // For now, we just continue and let the API routes handle auth
+  try {
+    // getClaims() validates and refreshes the JWT if needed
+    // This is preferred over getUser() or getSession() in server code
+    // Retry transient network errors to prevent intermittent failures
+    await retryWithBackoff(() => supabase.auth.getClaims());
+  } catch (error) {
+    // Log SSL/network errors for debugging
+    if (
+      error instanceof Error &&
+      (error.message.includes("SSL") || error.message.includes("fetch failed"))
+    ) {
+      console.error("[Auth Middleware] Network error during auth validation:", {
+        message: error.message,
+        path: request.nextUrl.pathname,
+        // Only log the error type, not sensitive details
+        errorType:
+          error.cause && typeof error.cause === "object"
+            ? (error.cause as { code?: unknown }).code
+            : "unknown",
+      });
+    }
+    // Continue anyway - downstream routes will handle auth as needed
+    // This prevents the entire site from breaking on transient errors
   }
 
   return supabaseResponse;

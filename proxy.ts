@@ -14,12 +14,17 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for:
+     * Match request paths that need auth validation:
+     * - All pages (/)
+     * - API routes (/api)
+     *
+     * Explicitly exclude:
      * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - Static assets (images, etc.)
+     * - _next/image (image optimization)
+     * - favicon.ico
+     * - Static assets (images, fonts, etc.)
+     * - Webpack HMR and development files
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|_next/webpack-hmr|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff|woff2|ttf|eot|ico)$).*)",
   ],
 };

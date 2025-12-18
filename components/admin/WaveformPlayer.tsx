@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import { Play, Pause, Loader2 } from "lucide-react";
+import { useTheme } from "next-themes";
 
 interface WaveformPlayerProps {
   url: string;
@@ -19,6 +20,7 @@ export function WaveformPlayer({
   const wavesurfer = useRef<WaveSurfer | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const { theme } = useTheme();
 
   // Initialize WaveSurfer
   useEffect(() => {
@@ -26,7 +28,8 @@ export function WaveformPlayer({
 
     wavesurfer.current = WaveSurfer.create({
       container: containerRef.current,
-      waveColor,
+      waveColor:
+        theme === "light" ? "rgba(0, 0, 0,0.2)" : "rgba(255, 255, 255, 0.2)",
       progressColor,
       height,
       cursorWidth: 0,
@@ -48,7 +51,7 @@ export function WaveformPlayer({
     return () => {
       wavesurfer.current?.destroy();
     };
-  }, [url, height, waveColor, progressColor]);
+  }, [url, height, waveColor, progressColor, theme]);
 
   const togglePlay = () => {
     wavesurfer.current?.playPause();

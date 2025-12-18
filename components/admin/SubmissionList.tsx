@@ -223,12 +223,12 @@ export function SubmissionList({
                 <span
                   className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium tracking-wider uppercase ${
                     sub.status === "pending"
-                      ? "bg-yellow-500/20 text-yellow-200"
+                      ? "bg-yellow-500/20 text-yellow-600"
                       : sub.status === "in_review"
-                        ? "bg-blue-500/20 text-blue-200"
+                        ? "bg-blue-500/20 text-blue-600"
                         : sub.status === "approved"
-                          ? "bg-green-500/20 text-green-200"
-                          : "bg-red-500/20 text-red-200"
+                          ? "bg-green-500/20 text-green-600"
+                          : "bg-red-500/20 text-red-600"
                   }`}
                 >
                   {sub.status.replace("_", " ")}

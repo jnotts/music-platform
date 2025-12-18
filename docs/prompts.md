@@ -101,3 +101,28 @@ _More back and forth used to reach working impl_
 
 Implement realtime updates for the admin submissions dashboard by integrating Supabase Broadcast. Configure
 app/admin/submissions/page.tsx to automatically listen for new-submission events from the server and track-updated events from the metadata extraction Edge Function, ensuring the UI reflects new data instantly without manual refreshes. Additionally, broadcast updates to track records from the edge function supabase/functions/extract-audio-duration/index.ts to also invalidate and refetch data.
+
+### Prompt 011 - debug error in supabase proxy
+
+Help debug this error which rarely throws a 400 on the entire site briefly before returning to noraml:
+TypeError: fetch failed
+at async updateSession (lib/supabase/proxy.ts:47:21)
+at async proxy (proxy.ts:11:10)
+45 | // getClaims() validates and refreshes the JWT if needed
+46 | // This is preferred over getUser() or getSession() in server code
+
+> 47 | const { error } = await supabase.auth.getClaims();
+
+     |                     ^
+
+48 |
+49 | // If there's an error getting claims (e.g., user not logged in),
+50 | // we still return the response - just without a valid session {
+[cause]: [Error: C060E9FA01000000:error:0A0000C6:SSL routines:tls_get_more_records:packet length
+too long:../deps/openssl/openssl/ssl/record/methods/tls_common.c:663:
+] {
+library: 'SSL routines',
+reason: 'packet length too long',
+code: 'ERR_SSL_PACKET_LENGTH_TOO_LONG'
+}
+}
