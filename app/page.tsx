@@ -305,7 +305,7 @@ export default function ArtistSubmissionPage() {
             className={`group relative flex h-64 cursor-pointer flex-col items-center justify-center gap-6 rounded-3xl border-2 border-dashed transition-all duration-300 ${
               isDragging
                 ? "scale-[1.02] border-primary bg-primary/10"
-                : "border-border bg-surface-muted hover:scale-[1.01] hover:border-primary hover:bg-primary/5 dark:border-white/10 dark:bg-white/[0.02]"
+                : "border-border bg-surface-muted backdrop-blur-sm hover:scale-[1.01] hover:border-primary hover:bg-primary/5 dark:border-white/10"
             }`}
           >
             <div
@@ -559,10 +559,11 @@ export default function ArtistSubmissionPage() {
                   >
                     <Plus size={28} />
                     <span className="mt-3 text-xs font-semibold tracking-wider uppercase">
-                      Add Another
+                      Add More
                     </span>
-                    <span className="mt-1 text-[10px] opacity-70">
-                      Max {UPLOAD_CONFIG.maxTracksPerSubmission} Tracks
+                    <span className="mt-1 text-center text-xs opacity-70">
+                      Max {UPLOAD_CONFIG.maxTracksPerSubmission} Tracks <br />
+                      (50MB limit per file)
                     </span>
                   </div>
                 )}

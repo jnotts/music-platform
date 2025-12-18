@@ -45,7 +45,7 @@ export default function AdminSubmissionsPage() {
         </div>
         <div className="flex items-center gap-4">
           <div className="rounded border border-border bg-surface-muted px-2 py-1 font-mono text-xs text-muted">
-            PROTOTYPE MODE
+            ADMIN MODE
           </div>
           <Link
             href="/admin/templates"
