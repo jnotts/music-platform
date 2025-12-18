@@ -1,6 +1,8 @@
 import { AdminTrack } from "@/types/admin-submission";
 import { WaveformPlayer } from "./WaveformPlayer";
 import { useTrackUrl } from "@/hooks/useTrackUrl";
+import { useState } from "react";
+import { formatDuration } from "@/lib/validation/upload";
 
 interface AdminTrackCardProps {
   track: AdminTrack;
@@ -15,6 +17,8 @@ export function AdminTrackCard({ track }: AdminTrackCardProps) {
     error,
   } = useTrackUrl(track.id);
 
+  const [currentTime, setCurrentTime] = useState<number>(0);
+
   return (
     <div className="glass group flex items-center gap-4 rounded-xl border border-white/5 bg-surface/50 p-4 transition-colors hover:bg-white/10">
       <div className="min-w-0 flex-1">
@@ -22,6 +26,7 @@ export function AdminTrackCard({ track }: AdminTrackCardProps) {
           <div className="flex items-center justify-between">
             <h4 className="truncate text-sm font-medium">{track.title}</h4>
             <div className="font-mono text-xs text-muted/50">
+              {formatDuration(currentTime) || "00:00"}/
               {track.duration || "--:--"}
             </div>
           </div>
@@ -48,7 +53,11 @@ export function AdminTrackCard({ track }: AdminTrackCardProps) {
               Audio unavailable
             </div>
           ) : (
-            <WaveformPlayer url={audioUrl} height={40} />
+            <WaveformPlayer
+              url={audioUrl}
+              height={40}
+              setCurrentTime={setCurrentTime}
+            />
           )}
         </div>
       </div>

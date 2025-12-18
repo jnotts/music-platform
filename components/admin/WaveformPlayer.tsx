@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import { Play, Pause, Loader2 } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -8,6 +8,7 @@ interface WaveformPlayerProps {
   height?: number;
   waveColor?: string;
   progressColor?: string;
+  setCurrentTime: Dispatch<SetStateAction<number>>;
 }
 
 export function WaveformPlayer({
@@ -15,6 +16,7 @@ export function WaveformPlayer({
   height = 40,
   waveColor = "rgba(255, 255, 255, 0.2)",
   progressColor = "#3b82f6", // tailwind blue-500
+  setCurrentTime,
 }: WaveformPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const wavesurfer = useRef<WaveSurfer | null>(null);
@@ -25,6 +27,13 @@ export function WaveformPlayer({
   // Initialize WaveSurfer
   useEffect(() => {
     if (!containerRef.current) return;
+
+    const onAudioProcess = () => {
+      if (wavesurfer.current?.isPlaying()) {
+        const currentT = wavesurfer.current.getCurrentTime();
+        setCurrentTime(Math.round(currentT));
+      }
+    };
 
     wavesurfer.current = WaveSurfer.create({
       container: containerRef.current,
@@ -47,11 +56,13 @@ export function WaveformPlayer({
     wavesurfer.current.on("play", () => setIsPlaying(true));
     wavesurfer.current.on("pause", () => setIsPlaying(false));
     wavesurfer.current.on("finish", () => setIsPlaying(false));
+    wavesurfer.current.on("audioprocess", () => onAudioProcess());
 
     return () => {
+      wavesurfer.current?.un("audioprocess", onAudioProcess);
       wavesurfer.current?.destroy();
     };
-  }, [url, height, waveColor, progressColor, theme]);
+  }, [url, height, waveColor, progressColor, theme, setCurrentTime]);
 
   const togglePlay = () => {
     wavesurfer.current?.playPause();
@@ -72,7 +83,6 @@ export function WaveformPlayer({
           <Play size={18} fill="currentColor" className="ml-0.5" />
         )}
       </button>
-
       <div ref={containerRef} className="w-full flex-1" />
     </div>
   );
