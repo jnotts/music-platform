@@ -44,8 +44,8 @@ function ToolbarButton({
       title={title}
       className={`flex h-9 w-9 items-center justify-center rounded-lg border transition-all ${
         active
-          ? "border-[#2D7DFF] bg-[#2D7DFF] text-white"
-          : "border-white/10 bg-white/5 text-[#A8A29E] hover:border-white/20 hover:bg-white/10 hover:text-[#F5F3EE]"
+          ? "border-primary bg-primary text-white"
+          : "border-border bg-surface-muted text-muted hover:border-primary/50 hover:bg-surface hover:text-foreground"
       } disabled:cursor-not-allowed disabled:opacity-50`}
     >
       {children}
@@ -70,7 +70,7 @@ export function TemplateToolbar({ editor, templateKey }: TemplateToolbarProps) {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-1 rounded-xl border border-white/10 bg-white/5 p-2">
+    <div className="flex flex-wrap items-center gap-1 rounded-xl border border-border bg-surface-muted p-2">
       {/* Text Formatting */}
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleBold().run()}
@@ -88,7 +88,7 @@ export function TemplateToolbar({ editor, templateKey }: TemplateToolbarProps) {
         <Italic size={16} />
       </ToolbarButton>
 
-      <div className="mx-1 h-6 w-px bg-white/10" />
+      <div className="mx-1 h-6 w-px bg-border" />
 
       {/* Headings */}
       <ToolbarButton
@@ -99,7 +99,7 @@ export function TemplateToolbar({ editor, templateKey }: TemplateToolbarProps) {
         <Heading2 size={16} />
       </ToolbarButton>
 
-      <div className="mx-1 h-6 w-px bg-white/10" />
+      <div className="mx-1 h-6 w-px bg-border" />
 
       {/* Lists */}
       <ToolbarButton
@@ -118,7 +118,7 @@ export function TemplateToolbar({ editor, templateKey }: TemplateToolbarProps) {
         <ListOrdered size={16} />
       </ToolbarButton>
 
-      <div className="mx-1 h-6 w-px bg-white/10" />
+      <div className="mx-1 h-6 w-px bg-border" />
 
       {/* Alignment */}
       <ToolbarButton
@@ -145,7 +145,7 @@ export function TemplateToolbar({ editor, templateKey }: TemplateToolbarProps) {
         <AlignRight size={16} />
       </ToolbarButton>
 
-      <div className="mx-1 h-6 w-px bg-white/10" />
+      <div className="mx-1 h-6 w-px bg-border" />
 
       {/* Link */}
       <ToolbarButton
@@ -156,7 +156,7 @@ export function TemplateToolbar({ editor, templateKey }: TemplateToolbarProps) {
         <LinkIcon size={16} />
       </ToolbarButton>
 
-      <div className="mx-1 h-6 w-px bg-white/10" />
+      <div className="mx-1 h-6 w-px bg-border" />
 
       {/* Variable Insertion */}
       <VariableMenu editor={editor} templateKey={templateKey} />

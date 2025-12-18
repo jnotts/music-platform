@@ -62,13 +62,13 @@ export function TemplatePreview({
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="mb-2 text-sm font-medium text-[#A8A29E]">Preview</h2>
-        <p className="text-xs text-[#A8A29E]">
+        <h2 className="mb-2 text-sm font-medium text-muted">Preview</h2>
+        <p className="text-xs text-muted">
           Showing with sample data for <span className="capitalize">{templateKey}</span> template
         </p>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-white/10 bg-white">
+      <div className="overflow-hidden rounded-xl border border-border bg-white">
         {/* Email Subject Bar */}
         {subject && (
           <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
@@ -87,16 +87,16 @@ export function TemplatePreview({
       </div>
 
       {/* Variable Legend */}
-      <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-        <div className="mb-2 text-xs font-medium uppercase tracking-wide text-[#A8A29E]">
+      <div className="rounded-xl border border-border bg-surface-muted p-4">
+        <div className="mb-2 text-xs font-medium uppercase tracking-wide text-muted">
           Sample Data
         </div>
         <div className="space-y-1">
           {Object.entries(sampleData).map(([key, value]) => (
             <div key={key} className="flex items-start gap-2 text-xs">
-              <code className="font-mono text-[#2D7DFF]">{`{{${key}}}`}</code>
-              <span className="text-[#A8A29E]">→</span>
-              <span className="text-[#F5F3EE]">{value}</span>
+              <code className="font-mono text-primary">{`{{${key}}}`}</code>
+              <span className="text-muted">→</span>
+              <span className="text-foreground">{value}</span>
             </div>
           ))}
         </div>

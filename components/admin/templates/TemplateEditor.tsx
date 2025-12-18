@@ -83,7 +83,7 @@ function EditorWrapper({
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm max-w-none focus:outline-none min-h-[300px] px-4 py-3 text-[#F5F3EE]",
+          "prose prose-sm max-w-none focus:outline-none min-h-[300px] px-4 py-3 text-foreground",
       },
     },
     onUpdate: ({ editor }) => {
@@ -100,18 +100,18 @@ function EditorWrapper({
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-[#A8A29E]">
+      <label className="block text-sm font-medium text-muted">
         HTML Content *
       </label>
 
       <div
         className={`overflow-hidden rounded-xl border ${
-          error ? "border-red-500" : "border-white/10"
-        } bg-white/5`}
+          error ? "border-red-500" : "border-border"
+        } bg-surface-muted`}
       >
         <TemplateToolbar editor={editor} templateKey={templateKey} />
 
-        <div className="border-t border-white/10">
+        <div className="border-t border-border">
           <EditorContent editor={editor} />
         </div>
       </div>
@@ -120,7 +120,7 @@ function EditorWrapper({
         <p className="flex items-center gap-1 text-xs text-red-400">{error}</p>
       )}
 
-      <p className="text-xs text-[#A8A29E]">
+      <p className="text-xs text-muted">
         Use the toolbar to format text and insert template variables.
       </p>
     </div>

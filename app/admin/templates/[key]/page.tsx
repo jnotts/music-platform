@@ -10,6 +10,7 @@ import { templateSchema, type TemplateInput } from "@/lib/schemas/template";
 import { useTemplate, useUpdateTemplate } from "@/hooks/useTemplates";
 import { TemplateEditor } from "@/components/admin/templates/TemplateEditor";
 import { TemplatePreview } from "@/components/admin/templates/TemplatePreview";
+import { AdminNav } from "@/components/admin/AdminNav";
 
 type PageProps = {
   params: Promise<{ key: string }>;
@@ -67,18 +68,18 @@ export default function AdminTemplateEditorPage({ params }: PageProps) {
   // Validate key
   if (!VALID_KEYS.includes(templateKey)) {
     return (
-      <div className="min-h-screen bg-[#0B0D0F] text-[#F5F3EE]">
+      <div className="min-h-screen bg-background text-foreground">
         <div className="flex min-h-screen items-center justify-center">
           <div className="text-center">
             <h1 className="text-xl font-semibold text-red-400">
               Invalid Template Key
             </h1>
-            <p className="mt-2 text-[#A8A29E]">
+            <p className="mt-2 text-muted">
               Valid keys: {VALID_KEYS.join(", ")}
             </p>
             <Link
               href="/admin/templates"
-              className="mt-4 inline-block text-[#2D7DFF] hover:underline"
+              className="mt-4 inline-block text-primary hover:underline"
             >
               ← Back to Templates
             </Link>
@@ -90,16 +91,15 @@ export default function AdminTemplateEditorPage({ params }: PageProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0B0D0F] text-[#F5F3EE]">
-        <header className="border-b border-white/10 px-6 py-4">
-          <div className="mx-auto max-w-7xl">
-            <div className="h-6 w-48 animate-pulse rounded bg-white/10" />
-          </div>
-        </header>
+      <div className="min-h-screen bg-background text-foreground">
+        <AdminNav
+          title={`${key.charAt(0).toUpperCase() + key.slice(1)} Template`}
+          backLink={{ href: "/admin/templates", label: "Templates" }}
+        />
         <main className="mx-auto max-w-7xl px-6 py-8">
           <div className="space-y-4">
-            <div className="h-10 w-full animate-pulse rounded-xl bg-white/5" />
-            <div className="h-96 w-full animate-pulse rounded-xl bg-white/5" />
+            <div className="h-10 w-full animate-pulse rounded-xl bg-surface-muted" />
+            <div className="h-96 w-full animate-pulse rounded-xl bg-surface-muted" />
           </div>
         </main>
       </div>
@@ -108,21 +108,21 @@ export default function AdminTemplateEditorPage({ params }: PageProps) {
 
   if (fetchError) {
     return (
-      <div className="min-h-screen bg-[#0B0D0F] text-[#F5F3EE]">
+      <div className="min-h-screen bg-background text-foreground">
         <div className="flex min-h-screen items-center justify-center">
           <div className="text-center">
             <AlertCircle className="mx-auto mb-4 text-red-400" size={40} />
             <h1 className="text-xl font-semibold text-red-400">
               Failed to Load Template
             </h1>
-            <p className="mt-2 text-[#A8A29E]">
+            <p className="mt-2 text-muted">
               {fetchError instanceof Error
                 ? fetchError.message
                 : "Unknown error"}
             </p>
             <Link
               href="/admin/templates"
-              className="mt-4 inline-block text-[#2D7DFF] hover:underline"
+              className="mt-4 inline-block text-primary hover:underline"
             >
               ← Back to Templates
             </Link>
@@ -133,18 +133,11 @@ export default function AdminTemplateEditorPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0D0F] text-[#F5F3EE]">
-      <header className="border-b border-white/10 px-6 py-4">
-        <div className="mx-auto flex max-w-7xl items-center gap-4">
-          <Link
-            href="/admin/templates"
-            className="text-[#A8A29E] transition-colors hover:text-[#F5F3EE]"
-          >
-            ← Templates
-          </Link>
-          <h1 className="text-xl font-semibold capitalize">{key} Template</h1>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background text-foreground">
+      <AdminNav
+        title={`${key.charAt(0).toUpperCase() + key.slice(1)} Template`}
+        backLink={{ href: "/admin/templates", label: "Templates" }}
+      />
 
       <main className="mx-auto max-w-7xl px-6 py-8">
         <form onSubmit={form.handleSubmit(handleSave)}>
@@ -153,7 +146,7 @@ export default function AdminTemplateEditorPage({ params }: PageProps) {
             <div className="space-y-4">
               {/* Subject Input */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-[#A8A29E]">
+                <label className="block text-sm font-medium text-muted">
                   Subject *
                 </label>
                 <input
@@ -162,8 +155,8 @@ export default function AdminTemplateEditorPage({ params }: PageProps) {
                   className={`w-full rounded-xl border ${
                     form.formState.errors.subject
                       ? "border-red-500"
-                      : "border-white/10"
-                  } bg-white/5 px-4 py-3 text-[#F5F3EE] placeholder-[#A8A29E]/50 focus:border-[#2D7DFF] focus:outline-none`}
+                      : "border-border"
+                  } bg-surface-muted px-4 py-3 text-foreground placeholder-muted/50 focus:border-primary focus:outline-none`}
                   {...form.register("subject")}
                 />
                 {form.formState.errors.subject && (
@@ -186,7 +179,7 @@ export default function AdminTemplateEditorPage({ params }: PageProps) {
                 <button
                   type="submit"
                   disabled={updateMutation.isPending || !form.formState.isDirty}
-                  className="flex items-center gap-2 rounded-xl bg-[#2D7DFF] px-6 py-3 font-medium text-white transition-colors hover:bg-[#2D7DFF]/90 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex items-center gap-2 rounded-xl bg-primary px-6 py-3 font-medium text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
                   title={
                     !form.formState.isDirty
                       ? "No changes to save"

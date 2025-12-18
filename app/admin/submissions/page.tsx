@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { SubmissionList } from "@/components/admin/SubmissionList";
 import { SubmissionDetail } from "@/components/admin/SubmissionDetail";
 import { ActionPanel } from "@/components/admin/ActionPanel";
-import { ArrowLeft, Layout, Loader2 } from "lucide-react";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { AdminNav } from "@/components/admin/AdminNav";
+import { Layout, Loader2 } from "lucide-react";
 import {
   useAdminSubmissions,
   useSubmissionReview,
@@ -29,35 +28,11 @@ export default function AdminSubmissionsPage() {
   return (
     <div className="relative flex h-screen min-h-screen flex-col transition-colors duration-300">
       {/* Header */}
-      <header className="z-10 flex h-16 shrink-0 items-center justify-between border-b border-border bg-surface/50 px-6 backdrop-blur-md">
-        <div className="flex items-center gap-4">
-          {/* <Link
-            href="/"
-            className="p-2 -ml-2 hover:bg-surface-muted rounded-lg transition-colors text-muted hover:text-foreground"
-          >
-            <ArrowLeft size={20} />
-          </Link> */}
-          <div className="mx-2 h-6 w-px bg-border" />
-          <div className="flex items-center gap-2">
-            <Layout size={18} className="text-primary" />
-            <h1 className="hidden font-semibold tracking-tight sm:block">
-              Submission Manager
-            </h1>
-          </div>
-        </div>
-        <div className="flex items-center gap-4">
-          {/* <div className="rounded border border-border bg-surface-muted px-2 py-1 font-mono text-xs text-muted">
-            ADMIN MODE
-          </div> */}
-          <Link
-            href="/admin/templates"
-            className="text-sm font-medium text-muted transition-colors hover:text-foreground"
-          >
-            Email Templates
-          </Link>
-          <ThemeToggle />
-        </div>
-      </header>
+      <AdminNav
+        title="Submission Manager"
+        icon={Layout}
+        navLinks={[{ href: "/admin/templates", label: "Email Templates" }]}
+      />
 
       {/* Main Layout Area */}
       <main className="relative z-10 flex flex-1 flex-col gap-6 overflow-y-auto p-4 lg:flex-row lg:overflow-hidden lg:p-6">
