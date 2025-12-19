@@ -34,7 +34,7 @@ export async function submitDemo(
 import type {
   AdminSubmission,
   SubmissionStatus,
-} from "@/types/admin-submission";
+} from "@/lib/types/admin-submission";
 
 /**
  * Fetch all submissions for admin dashboard

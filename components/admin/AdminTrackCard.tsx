@@ -1,4 +1,4 @@
-import { AdminTrack } from "@/types/admin-submission";
+import { AdminTrack } from "@/lib/types/admin-submission";
 import { WaveformPlayer } from "./WaveformPlayer";
 import { useTrackUrl } from "@/hooks/useTrackUrl";
 import { useState } from "react";

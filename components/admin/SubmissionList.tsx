@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Search, Filter } from "lucide-react";
-import { AdminSubmission } from "@/types/admin-submission";
+import { AdminSubmission } from "@/lib/types/admin-submission";
 
 interface SubmissionListProps {
   submissions: AdminSubmission[];

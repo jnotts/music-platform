@@ -1,4 +1,4 @@
-import { AdminSubmission } from "@/types/admin-submission";
+import { AdminSubmission } from "@/lib/types/admin-submission";
 import {
   Star,
   MessageSquare,

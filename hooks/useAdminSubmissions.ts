@@ -7,7 +7,7 @@ import {
   saveReview,
   getReview,
 } from "@/lib/api/client";
-import type { SubmissionStatus } from "@/types/admin-submission";
+import type { SubmissionStatus } from "@/lib/types/admin-submission";
 import type { ReviewInput } from "@/lib/schemas/review";
 
 export const ADMIN_SUBMISSIONS_KEY = ["admin-submissions"];
