@@ -2,6 +2,12 @@
 
 A polished web app where artists submit multiple demo tracks and admins review/manage submissions efficiently, with realtime updates, streaming playback, and automated emails.
 
+#### Quick Links:
+
+- [GitHub Repository](https://github.com/jnotts/music-label-platform/)
+- [Live Demo](https://music-platform-theta.vercel.app/)
+- [5 min Screenrecording Walkthrough](https://www.loom.com/share/7ccaa36036214792b8e29f476d6e8545)
+
 ## Tech Stack
 
 - **Frontend:** Next.js (App Router) + TypeScript + Tailwind CSS
@@ -173,8 +179,6 @@ supabase functions deploy extract-audio-duration
 ```
 
 The API route automatically triggers metadata extraction when tracks are created.
-
-**For detailed documentation, see [supabase/functions/README.md](./supabase/functions/README.md)**
 
 ## API Endpoints
 
