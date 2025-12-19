@@ -17,7 +17,19 @@ A polished web app where artists submit multiple demo tracks and admins review/m
 ### Prerequisites
 
 - Node.js 18+ or Bun
-- Supabase project with tables created (see Database Schema below)
+- Supabase project
+
+### Database Setup
+
+Create the database schema using the provided SQL file:
+
+```bash
+# Get your Supabase connection string from: Project Settings > Database > Connection String
+psql "postgresql://postgres:[YOUR-PASSWORD]@[YOUR-PROJECT-REF].supabase.co:5432/postgres" \
+  -f supabase/schemas/prod.sql
+```
+
+This will create all tables, indexes, constraints, and enable Row Level Security.
 
 ### Installation
 
@@ -47,11 +59,16 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
 # Server-only - NEVER expose to client
 SUPABASE_SECRET_KEY=your-secret-key
 
-# Email (Resend) - optional for now
-# RESEND_API_KEY=your-resend-api-key
+# Email (Resend)
+RESEND_API_KEY=your-resend-api-key
 ```
 
 > ⚠️ **Security Note:** The `SUPABASE_SERVICE_ROLE_KEY` must never be exposed to the client. It is only used server-side in API routes.
+
+## Test Credentials (admin login)
+
+- **Admin Email:** admin@yourlabel.com
+- **Password:** admin123
 
 ## Database Schema
 
@@ -140,7 +157,7 @@ The platform automatically extracts audio metadata (duration) from uploaded trac
 4. Function downloads the file, extracts duration using ffprobe, and updates the track record
 5. Admin UI displays the formatted duration (e.g., "3:45")
 
-**Setup:**
+**Edge FunctionSetup:**
 
 ```bash
 # Install Supabase CLI
@@ -162,6 +179,8 @@ The API route automatically triggers metadata extraction when tracks are created
 ### Public
 
 - `POST /api/submissions` - Create a new submission (artist + tracks)
+- `POST /api/uploads/sign` - Sign a file for upload to storage
+- `DELETE /api/uploads/delete` - Delete a file from storage (only unsubmitted files)
 
 ### Admin (requires authentication)
 
@@ -169,20 +188,13 @@ The API route automatically triggers metadata extraction when tracks are created
 - `GET /api/admin/submissions/[id]` - Get submission details
 - `PATCH /api/admin/submissions/[id]` - Update submission status
 - `PUT /api/admin/reviews/[submissionId]` - Upsert review
+- `GET /api/admin/reviews/[submissionId]` - Get review
 - `GET /api/admin/templates` - List email templates
 - `GET /api/admin/templates/[key]` - Get template by key
 - `PUT /api/admin/templates/[key]` - Update template
+- `GET /api/admin/tracks/[id]/play` - Get signedUrl for track to play
 
-## Test Credentials
-
-- **Admin Email:** admin@yourlabel.com
-- **Password:** admin123
-
-## Smoke Test
-
-Visit `/admin/api-test` to test the API wiring. This page calls the admin submissions endpoint and displays the response.
-
-## API Example Requests
+## API Common Example Requests
 
 ### `POST /api/submissions` — Create submission (public)
 

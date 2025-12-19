@@ -273,7 +273,7 @@ export default function ArtistSubmissionPage() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary/50 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
             </span>
-            MELOTECH RECORDS
+            SynthSounds
           </div>
 
           <h1
@@ -281,7 +281,7 @@ export default function ArtistSubmissionPage() {
               hasTracks ? "text-3xl md:text-4xl" : "text-5xl md:text-7xl"
             }`}
           >
-            Submit Your Demos
+            Artist Submission Portal
           </h1>
 
           <p

@@ -12,7 +12,7 @@ export default function AdminTemplatesPage() {
     <div className="min-h-screen bg-background text-foreground">
       <AdminNav
         title="Email Templates"
-        backLink={{ href: "/admin/submissions", label: "Submissions" }}
+        navLinks={[{ href: "/admin/submissions", label: "Submissions" }]}
       />
 
       <main className="mx-auto max-w-6xl px-6 py-8">

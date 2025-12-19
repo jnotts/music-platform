@@ -6,6 +6,9 @@ import { createAdminClient } from "@/lib/supabase/server";
  * DELETE /api/uploads/delete
  * Delete a file from storage (for cleanup when user removes uploads)
  * This is a public endpoint - called when user removes files before submission
+ *
+ * SECURITY: Only allows deletion of files NOT in the database
+ * (i.e., unsubmitted/abandoned uploads). Submitted tracks are protected.
  */
 export async function DELETE(request: NextRequest) {
   try {
@@ -18,7 +21,20 @@ export async function DELETE(request: NextRequest) {
 
     const adminClient = createAdminClient();
 
-    // Delete from storage
+    // SECURITY CHECK: Prevent deletion of submitted tracks
+    // Check if this storage path exists in the database
+    const { data: existingTrack } = await adminClient
+      .from("tracks")
+      .select("storage_path")
+      .eq("storage_path", storagePath)
+      .maybeSingle();
+
+    if (existingTrack) {
+      console.warn(`🚫 Attempted to delete submitted track: ${storagePath}`);
+      return errors.forbidden();
+    }
+
+    // Delete from storage (only unsubmitted files)
     const { error } = await adminClient.storage
       .from("tracks")
       .remove([storagePath]);

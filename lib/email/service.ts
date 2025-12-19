@@ -64,7 +64,7 @@ export async function sendTemplatedEmail(
     const html = replaceVariables(template.html, variables);
 
     const result = await resend.emails.send({
-      from: "MeloTech Records <onboarding@resend.dev>",
+      from: "SynthSounds <onboarding@resend.dev>",
       to,
       subject,
       html,
