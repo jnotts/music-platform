@@ -1,5 +1,7 @@
 # Tech Stack
 
+Initial tech stack plan, subject to change.
+
 ## Frontend
 
 - Next.js (React) + TypeScript

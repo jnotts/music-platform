@@ -72,7 +72,9 @@ RESEND_API_KEY=your-resend-api-key
 
 ## Database Schema
 
-The platform uses the following tables in Supabase:
+The platform uses the following tables in Supabase (see diagram below):
+
+![Database Schema](./supabase-schema-diagram.png)
 
 ### artists
 
@@ -281,3 +283,7 @@ curl -X PUT http://localhost:3000/api/admin/templates/confirmation \
 ```
 
 > **Note:** Admin endpoints require auth. They will return `401 UNAUTHORIZED` without a valid session cookie.
+
+---
+
+© 2025 Jordan

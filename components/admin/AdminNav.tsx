@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, LogOut, Loader2 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { createBrowserClient } from "@/lib/supabase/client";
+import { useState } from "react";
 
 interface AdminNavProps {
   /** Page title to display in the navbar */
@@ -38,6 +41,22 @@ export function AdminNav({
   navLinks = [],
   showThemeToggle = true,
 }: AdminNavProps) {
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      const supabase = createBrowserClient();
+      await supabase.auth.signOut();
+      router.push("/login");
+      router.refresh();
+    } catch (error) {
+      console.error("Logout error:", error);
+      setIsLoggingOut(false);
+    }
+  };
+
   return (
     <header className="z-10 flex h-16 shrink-0 items-center justify-between border-b border-border bg-surface/50 px-6 backdrop-blur-md">
       <div className="flex items-center gap-4">
@@ -68,6 +87,21 @@ export function AdminNav({
           </Link>
         ))}
         {showThemeToggle && <ThemeToggle />}
+        <button
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-surface-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+          title={isLoggingOut ? "Logging out..." : "Logout"}
+        >
+          {isLoggingOut ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            <LogOut size={16} />
+          )}
+          <span className="hidden sm:inline">
+            {isLoggingOut ? "Logging out..." : "Logout"}
+          </span>
+        </button>
       </div>
     </header>
   );
