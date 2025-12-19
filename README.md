@@ -4,7 +4,7 @@ A polished web app where artists submit multiple demo tracks and admins review/m
 
 #### Quick Links:
 
-- [GitHub Repository](https://github.com/jnotts/music-label-platform/)
+- [GitHub Repository](https://github.com/jnotts/music-platform/)
 - [Live Demo](https://music-platform-theta.vercel.app/)
 - [5 min Screenrecording Walkthrough](https://www.loom.com/share/7ccaa36036214792b8e29f476d6e8545)
 
